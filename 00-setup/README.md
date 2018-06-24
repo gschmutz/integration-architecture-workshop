@@ -52,6 +52,12 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-c
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
+## Eclipse IDE
+
+## SoapUI
+
+## SoapUI
+
 ## Fish shell
 [Fish](https://fishshell.com/) is a smart and user-friendly command line shell for macOS, Linux, and the rest of the family. Fish includes handy features like syntax highlighting, autosuggest-as-you-type, and fancy tab completions that just work, with no configuration required.
 

@@ -17,7 +17,7 @@ The following services are provisioned as part of the Integration Demo Platform:
 
 ## Prepare the Docker Compose configuration
 
-On your Docker Machine, create a folder `streamingplatform`. 
+On your Docker Machine, create a folder `integrationplatform`. 
 
 ```
 mkdir integrationplatform
@@ -101,17 +101,6 @@ if you want to see the services running for our environment, perform the followi
 ```
 docker ps
 
-CONTAINER ID        IMAGE                                            COMMAND                  CREATED             STATUS                           PORTS                                          NAMES
-d01fb522accd        apache/nifi:1.6.0                                "/bin/sh -c ${NIFI_B…"   6 hours ago         Up 6 hours                       8443/tcp, 10000/tcp, 0.0.0.0:38080->8080/tcp   stream-processing_nifi_1
-9ecf9a3ab42c        trivadisbds/streamsets-kafka-nosql               "/docker-entrypoint.…"   6 hours ago         Up 6 hours                       0.0.0.0:18630->18630/tcp                       stream-processing_streamsets_1
-5e96deeff9cc        confluentinc/ksql-cli:5.0.0-beta1                "perl -e 'while(1){ …"   7 hours ago         Up 7 hours                                                                      stream-processing_ksql-cli_1
-cf4893312d40        confluentinc/cp-kafka-rest:5.0.0-beta1-1         "/etc/confluent/dock…"   7 hours ago         Up 7 hours                       8082/tcp, 0.0.0.0:8084->8084/tcp               stream-processing_rest-proxy_1
-a36ed06fa71f        landoop/schema-registry-ui                       "/run.sh"                7 hours ago         Up 7 hours                       0.0.0.0:8002->8000/tcp                         stream-processing_schema-registry-ui_1
-382358f81cf8        confluentinc/cp-enterprise-kafka:5.0.0-beta1-1   "/etc/confluent/dock…"   7 hours ago         Up 7 hours                       9092/tcp, 0.0.0.0:9093->9093/tcp               stream-processing_broker-2_1
-e813de06f7cd        confluentinc/cp-enterprise-kafka:5.0.0-beta1-1   "/etc/confluent/dock…"   7 hours ago         Up 7 hours                       0.0.0.0:9092->9092/tcp                         stream-processing_broker-1_1
-c2210b42db6e        confluentinc/cp-enterprise-kafka:5.0.0-beta1-1   "/etc/confluent/dock…"   7 hours ago         Up 7 hours                       9092/tcp, 0.0.0.0:9094->9094/tcp               stream-processing_broker-3_1
-db2033adfd2a        trivadisbds/kafka-manager                        "./km.sh"                7 hours ago         Restarting (255) 7 seconds ago                                                  stream-processing_kafka-manager_1
-676e4f734b09        confluentinc/cp-zookeeper:5.0.0-beta1-1          "/etc/confluent/dock…"   7 hours ago         Up 7 hours                       2888/tcp, 0.0.0.0:2181->2181/tcp, 3888/tcp     stream-processing_zookeeper_1
 ```
 
 ### Add inbound rules for the follwing ports
@@ -119,20 +108,14 @@ If you are using a VM on Azure, make sure to add inbound rules for the following
 
 Service | Url
 ------- | -------------
-StreamSets Data Collector | 18630
-Apache NiFi | 28080
-Apache Zepplin  | 38080
-Schema Registry UI  | 8002
-Schema Registry Rest API  | 8081
-Kafka Manager  | 39000
-Confluent Control Center | 9021
+ActiveMQ | 8161, 61616, 1883
 
 
 ### Add entry to local /etc/hosts File
-To simplify working with the Streaming Platform, add the following entry to your local `/etc/hosts` file. 
+To simplify working with the Integration Platform, add the following entry to your local `/etc/hosts` file. 
 
 ```
-40.91.195.92	streamingplatform
+40.91.195.92	integrationplatform
 ```
 
 ## Services accessible on Streaming Platform
@@ -141,12 +124,12 @@ The following service are available as part of the platform:
 Type | Service | Url
 ------|------- | -------------
 Development | StreamSets Data Collector | <http://streamingplatform:18630>
-Development | Apache NiFi | <http://streamingplatform:28080/nifi>
-Development | Apache Zepplin  | <http://streamingplatform:38080>
 Governance | Schema Registry UI  | <http://streamingplatform:8002>
 Governance | Schema Registry Rest API  | <http://streamingplatform:8081>
+Management | Hawtio | <http://integrationplatform:8090/hawtio>
+Management | ActiveMQ Admin | <http://integrationplatform:8161>
+Management | Servicemix | <http://integrationplatform:8161>
 Management | Kafka Manager  | <http://streamingplatform:39000>
-Management | Confluent Control Center | <http://streamingplatform:9021>
 
 
 ## Stop the environment
@@ -163,4 +146,11 @@ To stop and remove all running container, execute the following command:
 ```
 docker-compose down
 ```
+
+Remove "dangling" volumes
+
+```
+docker volume rm (docker volume ls -qf dangling=true)
+```
+
 

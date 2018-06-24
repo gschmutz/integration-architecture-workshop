@@ -41,4 +41,21 @@ services:
       - POSTGRES_USER=sample
       - POSTGRES_DB=sample
     restart: always
-      
+
+  activemq:
+    image: rmohr/activemq:5.15.4
+    hostname: activemq
+    ports:
+      - 61616:61616
+      - 8161:8161
+#    volumes:
+#      - ./container_data/activemq/data:/opt/activemq/data
+#      - ./container_data/activemq/conf:/opt/activemq/conf
+    restart: always
+ 
+  hawtio:
+    image: "indigo/hawtio"
+    hostname: hawtio
+    ports:
+      - "8090:8090" 
+
