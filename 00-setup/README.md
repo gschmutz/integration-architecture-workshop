@@ -51,12 +51,56 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-c
 ```
 sudo chmod +x /usr/local/bin/docker-compose
 ```
+¨
+## Java JDK
+If you want to install the latest JDK 1.8, use the webupd8team PPA.
+
+Add the repository in your system:
+
+```
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+```
+
+You can now install Oracle Java 8 using the following command:
+
+```
+sudo apt-get install oracle-java8-installer
+```
+
+This ppa repository also provides a package to set environment variables automatically. Just type:
+
+```
+sudo apt-get install oracle-java8-set-default
+
+```
+
+## Apache Maven
+Install Apache Maven using the following commands:
+
+```
+sudo apt-get update
+sudo apt-get install maven
+```
 
 ## Eclipse IDE
+Install the Eclipse IDE for Java Developers from here <http://www.eclipse.org/downloads/eclipse-packages/>.
 
 ## SoapUI
 
-## SoapUI
+Install the SoapUI Open Source from here <https://www.soapui.org/downloads/soapui.html>.
+
+## SQuirrel SQL
+
+Install the Universal SQL Client SQuirrel SQL from here <http://squirrel-sql.sourceforge.net/>.
+
+## FileZilla CLient
+
+Install the FileZilla Client from here <https://filezilla-project.org/>.
+
+## MQTTfx
+
+Install the MQTT client MQTTfx from here <http://mqttfx.jensd.de/index.php/download>.
 
 ## Fish shell
 [Fish](https://fishshell.com/) is a smart and user-friendly command line shell for macOS, Linux, and the rest of the family. Fish includes handy features like syntax highlighting, autosuggest-as-you-type, and fancy tab completions that just work, with no configuration required.

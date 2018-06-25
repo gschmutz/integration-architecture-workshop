@@ -42,14 +42,27 @@ services:
       - POSTGRES_DB=sample
     restart: always
 
+  ftp:
+    image: stilliard/pure-ftpd
+    hostname: ftp
+    environment:
+#      - PUBLICHOST="192.168.25.134"
+      - FTP_USER_NAME=order
+      - FTP_USER_PASS=order
+      - FTP_USER_HOME=/home/orderentry
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    restart: always
+      
   activemq:
     image: rmohr/activemq:5.15.4
     hostname: activemq
     ports:
       - 61616:61616
       - 8161:8161
-#    volumes:
-#      - ./container_data/activemq/data:/opt/activemq/data
+    volumes:
+      - ./container_data/activemq/data:/opt/activemq/data
 #      - ./container_data/activemq/conf:/opt/activemq/conf
     restart: always
  

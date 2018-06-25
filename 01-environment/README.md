@@ -73,6 +73,12 @@ services:
       
 ```
 
+Some of the container will store data outside on the docker host. Therefore let's create the parent directory **container_data** for holding all that data. 
+
+```
+mkdir container_data
+```
+
 ## Start the environment
 
 Before we can start the environment, we have to set the environment variable DOCKER_HOST_IP to contain the IP-address of the Docker Host and environment variable PUBLIC_IP to the public IP address (not the same if you are using Azure). 
@@ -82,6 +88,7 @@ You can find the IP-Address of the Docker host using the `ifconfig` config from 
 export PUBLIC_IP=40.91.195.92
 export DOCKER_HOST_IP=10.0.1.4
 ```
+
 Now let's run all the container specified by the Docker Compose configuration.
 
 ```
