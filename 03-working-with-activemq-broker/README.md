@@ -10,7 +10,7 @@ Our integration platform does not yet contain a message broker.
 
 So let's add a new service to the docker-compose.yml file we have created in [Setup of the Integration Platform](../01-environment/README.md).
 
-	```
+```
   activemq:
     image: rmohr/activemq:5.15.4
     hostname: activemq
@@ -20,15 +20,15 @@ So let's add a new service to the docker-compose.yml file we have created in [Se
     volumes:
       - ./container_data/activemq/data:/opt/activemq/data
     restart: always
-	```
+```
 
 The service will map the data folder to a folder on the docker host. Therefore we have to create it below the container_data created in the setup and give it the necessary access privileges.
 
-	```
+```
 cd integrationplatform
 mkdir -p container_data/activemq/data
 chmod 777 -R container_data
-	```
+```
 	
 Now let's start that sevice by executing `docker-compose up` once more. 
 
