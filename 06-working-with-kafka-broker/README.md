@@ -5,6 +5,130 @@ The main units of interest in Kafka are topics and messages. A topic is simply w
 
 In this workshop you will learn how to create topics, how to produce messsages, how to consume messages and how to descibe/view metadata in Apache Kafka. 
     
+## Adding Apache Kafka to the Integration Platform
+
+Our integration platform does not yet contain a Kafka message broker.A Zookeeper node is already up and running and we will reuse it. 
+
+So let's add a new service to the docker-compose.yml file we have created in [Setup of the Integration Platform](../01-environment/README.md).
+
+```
+  broker-1:
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
+    hostname: broker-1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_RACK: 'r1'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://${DOCKER_HOST_IP}:9092'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_JMX_PORT: 9994
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker-1:9092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+    restart: always
+
+  broker-2:
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
+    hostname: broker-2
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_BROKER_RACK: 'r1'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://${DOCKER_HOST_IP}:9093'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_JMX_PORT: 9993
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker-2:9093
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+    restart: always
+
+  broker-3:
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
+    hostname: broker-3
+    depends_on:
+      - zookeeper
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_BROKER_RACK: 'r1'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://${DOCKER_HOST_IP}:9094'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_JMX_PORT: 9994
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker-3:9094
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+    restart: always
+      
+  schema_registry:
+    image: confluentinc/cp-schema-registry:5.0.0-beta30-1
+    hostname: schema_registry
+    depends_on:
+      - zookeeper
+      - broker-1
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema_registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
+    restart: always
+
+  kafka-manager:
+    image: trivadisbds/kafka-manager
+    hostname: kafka-manager
+    depends_on:
+      - zookeeper
+    ports:
+      - "39000:9000"
+    environment:
+      ZK_HOSTS: 'zookeeper:2181'
+      APPLICATION_SECRET: 'letmein'
+    restart: always    
+```
+
+Now let's start that sevice by executing `docker-compose up` once more. 
+
+```
+docker-compose up -d	
+```
+
+With Docker Compose, you can easily later add some new services, even if the platform is currently running. If you redo a `docker-compose up -d`, Docker Compose will check if there is a delta between what is currently running and what the `docker-compose.yml` file tells. 
+
+If there is a new service added, such as here with Mosquitto, Docker Compose will start the service, leaving the other, already running services untouched. 
+
+If you change configuration on an already running service, then Docker will recreate that service applying the new settings. 
+
+However, removing a service from the `docker-compose.yml` will not cause a running service to be stopped and removed. You have to do that manually. 
+
 ## Working with built-in Command Line Utilities 
 
 ### Connect to a Kafka Broker 
