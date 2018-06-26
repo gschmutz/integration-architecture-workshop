@@ -86,6 +86,18 @@ sudo apt-get install maven
 ## Eclipse IDE
 Install the Eclipse IDE for Java Developers from here <http://www.eclipse.org/downloads/eclipse-packages/>.
 
+After decompressing the downloaded archive, start the installer by clicking on the **eclipse-inst** icon.
+
+A screen for choosing the version should pop up. Select the Eclipse IDE for Java EE Developers.
+
+![Alt Image Text](./images/eclipse-install-choose-version.png "Schema Registry UI")
+
+On the next screen, select in the **Installation Folder** select the folder where you want Eclipse installed and click on **INSTALL** and the installation will start. 
+
+![Alt Image Text](./images/eclipse-install-start.png "Schema Registry UI")
+
+After a while Eclipse should be ready and can be started. 
+
 ## SoapUI
 
 Install the SoapUI Open Source from here <https://www.soapui.org/downloads/soapui.html>.
