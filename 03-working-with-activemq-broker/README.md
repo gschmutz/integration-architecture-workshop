@@ -60,7 +60,7 @@ To connect to the ActiveMQ broker we have started above, open a new terminal win
 In that window, execute a `docker exec` command to run a shell in the `activemq` docker container.
 
 ```
-docker exec -ti integrationplatform-activemq_1 bash
+docker exec -ti integrationplatform_activemq_1 bash
 ```
 
 Now we are connected to bash shell in the running ActiveMQ container. This is similar to an SSH connect to a remote machine, but SSH is not easily done in a containerized environment, as both the credentials as well as the IP address of the container are easily known. You can ask for the IP address of a running container, but it will not be static over multiple runs. Using the `docker exec` command simplifies that a lot.
