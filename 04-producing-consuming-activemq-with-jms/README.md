@@ -9,33 +9,30 @@ Start the Eclipse IDE if not yet done.
 
 ## Working with Queues from JMS
 
+Create a new [Maven project](../99-misc/97-working-with-eclipse/README.md) and in the last step use `com.trivadis.integration.ws` for the **Group Id** and `working-with-queue` for the **Artifact Id**.
 
+### Creating the project definition (pom.xml)
+
+Navigate to the **pom.xml** and double-click on it. The POM Editor will be displayed. 
+
+![Alt Image Text](./images/eclipse-editing-pom-1.png "Schema Registry UI")
+
+You can either use the GUI to edit your pom.xml or click on the last tab **pom.xml** to switch to the "code view". Let's do that. 
+
+You will see the still rather empty definition.
 
 ```
-mvn eclipse:eclipse
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.trivadis.integrationws</groupId>
+  <artifactId>working-with-queue</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</project>
 ```
 
-Import the Maven project `working-with-queue` from Eclipse.
-
-Navigate to the 
+First let's add the dependencies for the project. Copy the following block right after the <version> tag, before the closing </project> tag. 
 
 ```
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-	    <groupId>com.trivadis.integrationws.activemq</groupId>
-	    <artifactId>activemq-parent</artifactId>
-        <version>0.1-SNAPSHOT</version>
-    </parent>
-
-    <artifactId>working-with-queue</artifactId>
-    <packaging>jar</packaging>
-
-    <name>ActiveMQ Examples -- Simple Queue</name>
-
    <properties>
         <activemq-version>5.7.0</activemq-version>
 		<slf4j-version>1.6.6</slf4j-version>
@@ -58,78 +55,15 @@ Navigate to the
 		    <version>${slf4j-version}</version>
 		</dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>consumer</id>
-            <build>
-                <defaultGoal>package</defaultGoal>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>java</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>org.apache.activemq.simple.queue.SimpleConsumer</mainClass>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>producer</id>
-            <build>
-                <defaultGoal>package</defaultGoal>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>java</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>org.apache.activemq.simple.queue.SimpleProducer</mainClass>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-</project>
-``` 
-
-``` 
-# JNDI properties file to setup the JNDI server within ActiveMQ
-
-#
-# Default JNDI properties settings
-#
-java.naming.factory.initial = org.apache.activemq.jndi.ActiveMQInitialContextFactory
-java.naming.provider.url = tcp://localhost:61616
-
-#
-# Set the connection factory name(s) as well as the destination names. The connection factory name(s)
-# as well as the second part (after the dot) of the left hand side of the destination definition
-# must be used in the JNDI lookups.
-#
-connectionFactoryNames = myJmsFactory
-queue.queue/simple = test.queue.simple
-``` 
+```
 
 ### Writing a Producer
+
+First create a new Java Package `org.apache.activemq.simple.queue` in the folder **src/main/java**.
+
+Create a new Java Class `SimpleProducer` in the package `org.apache.activemq.simple.queue` just created. 
+
+Add the following code to the empty class. 
 
 ``` 
 package org.apache.activemq.simple.queue;
@@ -197,10 +131,81 @@ public class SimpleProducer {
     }
 }
 
+```
+### Define the JNDI settings for JMS
+
+Create a new file `jndi.properties` in the folder **src/main/resources** and add the following settings. 
+
 ``` 
+# JNDI properties file to setup the JNDI server within ActiveMQ
+
+#
+# Default JNDI properties settings
+#
+java.naming.factory.initial = org.apache.activemq.jndi.ActiveMQInitialContextFactory
+java.naming.provider.url = tcp://localhost:61616
+
+#
+# Set the connection factory name(s) as well as the destination names. The connection factory name(s)
+# as well as the second part (after the dot) of the left hand side of the destination definition
+# must be used in the JNDI lookups.
+#
+connectionFactoryNames = myJmsFactory
+queue.queue/simple = test.queue.simple
+``` 
+
+This will tell the program where to find the ActiveMQ broker as well as which Queue to use. 
+
+### Runing the Producer
+
+In order to run the Producer class from the command line, we need to create a Maven profile. Add the following lines to the `pom.xml`, just before the ending `</project>` tag.
+
+```
+    <profiles>
+        <profile>
+            <id>producer</id>
+            <build>
+                <defaultGoal>package</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.apache.activemq.simple.queue.SimpleProducer</mainClass>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+``` 
+
+In a terminal window, navigate to the project folder and enter
+
+``` 
+mvn package
+``` 
+
+to compile the project. If it is successful, you can then run the producer using
+
+``` 
+mvn -P producer
+``` 
+
+Check with the ActiveMQ Web Console that you have a queue **test.queue.simple** and that it contains 100 messages. 
 
 
 ### Writing a Consumer
+
+Now let's write the consumer. In the same Java Package `org.apache.activemq.simple.queue` create a new Java class `SimpleConsumer` and add the following code.
 
 ``` 
 package org.apache.activemq.simple.queue;
@@ -272,19 +277,47 @@ public class SimpleConsumer {
     }
 }
 ``` 
-### Running the Consumer
+
+### Runing the Consumer
+In order to run the Consumer class from the command line, we need to create another Maven profile. Add the following lines to the `pom.xml`, just before the ending `</profiles>` tag.
+
+```
+        <profile>
+            <id>consumer</id>
+            <build>
+                <defaultGoal>package</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.apache.activemq.simple.queue.SimpleConsumer</mainClass>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+``` 
+
+In a terminal window, navigate to the project folder and enter
+
+``` 
+mvn package
+``` 
+
+to compile the project. If it is successful, you can then run the producer using
 
 ``` 
 mvn -P consumer
 ``` 
-
-
-### Running the Producer
-
-``` 
-mvn -P producer
-``` 
-
 
 ## Working with Topics from JMS
 
