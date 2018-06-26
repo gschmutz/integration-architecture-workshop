@@ -393,21 +393,21 @@ usage: java -jar a-<version>-with-dependencies.jar [-A] [-a] [-B
  -y,--jms-type <arg>           Sets JMSType header
 ```
 
-### A in Action
+### A in "Action"
 
-To put message with payload "foobar" to queue q on local broker
+To put message with payload "foobar" to queue ow-queue on local broker
 
 ```
 a -p "foobar" ow-queue
 ```
 
-Put message with payload of file foo.bar to queue q on local broker, also set a property
+Put message with payload of file foo.bar to queue ow-queue on local broker, also set a property
 
 ```
 a -p "@foo.bar" -Hfoo=bar ow-queue
 ```
 
-Browse five messages from queue q.
+Browse five messages from queue ow-queue.
 
 ```
 a -c 5 ow-queue
@@ -419,31 +419,31 @@ Get message from queue and show JMS headers
 a -g -j ow-queue
 ```
 
-Put 100 messages to queue q (for load test etc)
+Put 100 messages to queue ow-queue (for load test etc)
 
 ```
 a -p "foobar" -c 100 ow-queue
 ```
 
-Put file foo.bar as a byte message on queue q
+Put file foo.bar as a byte message on queue ow-queue
 
 ```
 a -p "@foo.bar" -t bytes ow-queue
 ```
 
-Read all XML files in a folder input an put them on queue q. Files are deleted afterwards.
+Read all XML files in a folder input an put them on queue ow-queue. Files are deleted afterwards.
 
 ```
 a -R "input/*.xml" ow-queue
 ```
 
-Put file foo.json as map message on queue q
+Put file foo.json as map message on queue ow-queue
 
 ```
 a -p "@foo.json" -t map ow-queue
 ```
 
-Put a map message on a queue using json format
+Put a map message on a queue using json as the format of the payload
 
 ```
 a -p "{\"a\":\"a message tool\"}" -t map ow-queue
