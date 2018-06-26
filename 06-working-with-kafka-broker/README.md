@@ -18,9 +18,9 @@ So let's connect into one of the broker through a terminal window.
 1. open a terminal window on the Docker Host
 2. run a `docker exec` command to run a shell in the docker container of broker-1
 
-	```
-	docker exec -ti streamingplatform_broker-1_1 bash
-	```
+```
+docker exec -ti streamingplatform_broker-1_1 bash
+```
 
 ### List topics in Kafka
 
