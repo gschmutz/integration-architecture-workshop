@@ -20,6 +20,12 @@ So let's add a new service to the docker-compose.yml file we have created in [Se
     volumes:
       - ./container_data/activemq/data:/opt/activemq/data
     restart: always
+    
+  hawtio:
+    image: "indigo/hawtio"
+    hostname: hawtio
+    ports:
+      - "8090:8090"
 ```
 
 The service will map the data folder to a folder on the docker host. Therefore we have to create it below the container_data created in the setup and give it the necessary access privileges.
