@@ -162,11 +162,11 @@ Now let's create a new topic. For that we again use the `kafka-topics` utility b
 
 ```
 kafka-topics --create \
-			--if-not-exists \
-			--zookeeper zookeeper:2181 \
-			--topic test-topic \
-			--partitions 6 \
-			--replication-factor 2
+             --if-not-exists \
+             --zookeeper zookeeper:2181 \
+             --topic test-topic \
+	     --partitions 6 \
+	     --replication-factor 2
 ```
 
 Re-Run the command to list the topics. You should see the new topic you have just created. 
