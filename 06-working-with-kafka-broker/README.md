@@ -194,7 +194,7 @@ In a new terminal window, first let's run the consumer
 
 ```
 kafka-console-consumer --bootstrap-server broker-1:9092,broker-2:9093 \
-				--topic test-topic
+                       --topic test-topic
 ```
 After it is started, the consumer just waits for newly produced messages. 
 
@@ -202,7 +202,7 @@ In a another terminal, connect into broker-1 using `docker exec` and run the fol
  
 ```
 kafka-console-producer --broker-list broker-1:9092,broker-2:9093 \
-				--topic test-topic
+                       --topic test-topic
 ```
 
 On the `>` prompt enter a few messages, execute each single message by hitting the Enter key.<br>
@@ -262,18 +262,18 @@ We can check that by just listing the messages we have created so far specifying
 
 ```
 kafka-console-consumer --bootstrap-server broker-1:9092,broker-2:9093 \
-							--topic test-topic \
-							--property print.key=true \
-							--property key.separator=, \
-							--from-beginning
+                       --topic test-topic \
+		       --property print.key=true \
+		       --property key.separator=, \
+		       --from-beginning
 ```
 To produce messages with a key, use the properties `parse.key` and `key.separator`. 
 
 ```
 kafka-console-producer --broker-list broker-1:9092,broker-2:9093 \
-							--topic test-topic \
-							--property parse.key=true \
-							--property key.separator=,
+                       --topic test-topic \
+		       --property parse.key=true \
+		       --property key.separator=,
 ```
 
 Enter your messages so that a key and messages are separated by a comma, i.e. `key1,message1`.
