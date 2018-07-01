@@ -9,13 +9,13 @@ Start the Eclipse IDE if not yet done.
 
 ## Working with Queues from JMS
 
-Create a new [Maven project](../99-misc/97-working-with-eclipse/README.md) and in the last step use `com.trivadis.integration.ws` for the **Group Id** and `working-with-queue` for the **Artifact Id**.
+Create a new Maven project [as shown here](../99-misc/97-working-with-eclipse/README.md) and in the last step use `com.trivadis.integration.ws` for the **Group Id** and `working-with-queue` for the **Artifact Id**.
 
 ### Creating the project definition (pom.xml)
 
 Navigate to the **pom.xml** and double-click on it. The POM Editor will be displayed. 
 
-![Alt Image Text](./images/eclipse-editing-pom-1.png "Schema Registry UI")
+![Alt Image Text](./images/eclipse-editing-pom-1.png "Edit Pom.xml")
 
 You can either use the GUI to edit your pom.xml or click on the last tab **pom.xml** to switch to the "code view". Let's do that. 
 

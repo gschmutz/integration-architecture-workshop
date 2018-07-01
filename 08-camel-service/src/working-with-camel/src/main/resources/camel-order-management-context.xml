@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:broker="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+  		<routeBuilder ref="orderManagementRouteBuilder" />    
+	</camelContext>
+
+	<bean id="orderManagementRouteBuilder" class="com.trivadis.integrationws.camel.OrderManagementRoute"/>
+
+	<bean id="activemq"
+		class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<property name="brokerURL" value="tcp://192.168.25.136:61616" />
+	</bean>
+
+
+</beans>
