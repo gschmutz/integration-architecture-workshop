@@ -370,7 +370,6 @@ Add the following definition to the `docker-compose.yml` file.
     image: stilliard/pure-ftpd
     hostname: ftp
     environment:
-      - PUBLICHOST="192.168.25.134"
       - FTP_USER_NAME=order
       - FTP_USER_PASS=order
       - FTP_USER_HOME=/home/orderentry
