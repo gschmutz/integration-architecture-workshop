@@ -24,11 +24,15 @@ services:
     restart: always
 
   presto:
-    image: starburstdata/presto
-    container_name: presto
     hostname: presto
+    image: 'starburstdata/presto:302-e.7'
+    container_name: presto
     ports:
-      - 28080:8080
+      - '8089:8080'
+    volumes: 
+#      - './conf/presto/minio.properties:/usr/lib/presto/etc/catalog/minio.properties'
+      - './conf/presto/postgresql.properties:/usr/lib/presto/etc/catalog/postgresql.properties'
+#      - './hadoop/lib/json-serde-1.3.8-jar-with-dependencies.jar:/usr/lib/presto/lib/plugin/hive-hadoop2/json-serde-1.3.8-jar-with-dependencies.jar'
     restart: always
 
   adminer:
@@ -38,13 +42,16 @@ services:
       - 38080:8080
     restart: always
 
-  mysql:
-    image: mujz/pagila
-    container_name: mysql
+  postgresql:
+    image: postgres:10
+    container_name: postgresql
+    hostname: postgresql
+    volumes: 
+      - ./sql/create-driver.sql:/docker-entrypoint-initdb.d/create-driver.sql
     environment:
-      - POSTGRES_PASSWORD=sample
-      - POSTGRES_USER=sample
-      - POSTGRES_DB=sample
+      POSTGRES_DB: sample
+      POSTGRES_PASSWORD: sample
+      POSTGRES_USER: sample
     restart: always
 
   ftp:
@@ -62,15 +69,23 @@ services:
     restart: always
       
   activemq:
-    image: rmohr/activemq:5.15.4
+    image: rmohr/activemq
     container_name: activemq
-    hostname: activemq
     ports:
-      - 61616:61616
-      - 8161:8161
+      # mqtt
+      - "1883:1883"
+      # amqp
+      - "5672:5672"
+      # ui
+      - "8161:8161"
+      # stomp
+      - "61613:61613"
+      # ws
+      - "61614:61614"
+      # jms
+      - "61616:61616"
     volumes:
-      - ./container_data/activemq/data:/opt/activemq/data
-#      - ./container_data/activemq/conf:/opt/activemq/conf
+      - ./container-volume/activemq/data:/opt/activemq/data
     restart: always
  
   hawtio:
