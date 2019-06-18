@@ -30,8 +30,8 @@ Navigate to your local folder, where you want to keep the workshop and execute t
 
 ```
 # Get the project
-git clone https://github.com/gschmutz/stream-processing-workshop.git
-cd stream-processing-workshop/01-environment/docker
+git clone https://github.com/gschmutz/integration-architecture-workshop.git
+cd integration-architecture-workshop/01-environment/docker
 ```
 
 ## Start Environment
