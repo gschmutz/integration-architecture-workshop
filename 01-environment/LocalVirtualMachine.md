@@ -28,8 +28,8 @@ Now let's checkout the NoSQL Workshop project from GitHub:
 ```
 # Get the project
 cd /home/bigdata
-git clone https://github.com/gschmutz/stream-processing-workshop.git
-cd stream-processing-workshop/01-environment/docker
+git clone https://github.com/gschmutz/integration-architecture-workshop.git
+cd integration-architecture-workshop/01-environment/docker
 ```
 
 ## Start Environment
