@@ -38,9 +38,9 @@ sudo sysctl -w vm.max_map_count=262144
 
 # Get the project
 cd /home/ubuntu 
-git clone https://github.com/gschmutz/stream-processing-workshop.git
-chown -R ubuntu:ubuntu stream-processing-workshop
-cd stream-processing-workshop/01-environment/docker
+git clone https://github.com/gschmutz/integration-architecture-workshop.git
+chown -R ubuntu:ubuntu integration-architecture-workshop
+cd integration-architecture-workshop/01-environment/docker
 
 # Startup Environment
 sudo -E docker-compose up -d
