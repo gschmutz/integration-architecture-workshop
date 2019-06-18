@@ -22,7 +22,7 @@ These steps are necessary after the starting the docker environment.
 To simplify working with the Streaming Platform and for the links below to work, add the following entry to your local `/etc/hosts` file. 
 
 ```
-40.91.195.92	streamingplatform
+40.91.195.92	integrationplatform
 ```
 
 Replace the IP address by the public IP address of the docker host. 
@@ -32,12 +32,12 @@ The following service are available as part of the platform:
 
 Type | Service | Url
 ------|------- | -------------
-Development | StreamSets Data Collector | <http://streamingplatform:18630>
-Governance | Schema Registry UI  | <http://streamingplatform:8002>
-Governance | Schema Registry Rest API  | <http://streamingplatform:8081>
+Development | StreamSets Data Collector | <http://integrationplatform:18630>
+Governance | Schema Registry UI  | <http://integrationplatform:8002>
+Governance | Schema Registry Rest API  | <http://integrationplatform:8081>
 Management | Hawtio | <http://integrationplatform:8090/hawtio>
 Management | ActiveMQ Admin | <http://integrationplatform:8161>
 Management | Servicemix | <http://integrationplatform:8161>
-Management | Kafka Manager  | <http://streamingplatform:39000>
+Management | Kafka Manager  | <http://integrationplatform:39000>
 
 
