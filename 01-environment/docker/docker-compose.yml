@@ -57,8 +57,6 @@ services:
       - "38081:8080"    
       - "4040:4040"
       - "42331:42331"    
-    env_file:
-      - ./conf/hadoop.env
     environment:
       SPARK_MASTER: "spark://spark-master:7077"
       # set spark-master for Zeppelin interpreter
