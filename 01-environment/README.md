@@ -4,8 +4,6 @@ The environment for this course is completely based on docker containers.
 
 In order to simplify the provisioning, a single docker-compose configuration is used. All the necessary software will be provisioned using Docker.  
 
-For Kafka we will be using the Docker images provided by Confluent and available under the following GitHub project: <https://github.com/confluentinc/cp-docker-images>. In this project, there is an example folder with a few different docker compose configuration for various Confluent Platform configurations.
-
 You have the following options to start the environment:
 
  * [**Local Virtual Machine Environment**](./LocalVirtualMachine.md) - a Virtual Machine with Docker and Docker Compose pre-installed will be distributed at by the course infrastructure. You will need 50 GB free disk space.
