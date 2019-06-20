@@ -52,7 +52,7 @@ into the **Launch Script** edit field
 
 Click on **Change SSH key pair** and leave the **Default** selected and then click on **Download** and save the file to a convenient location on your machine. Under **Choose your instance plan** click on the arrow on the right and select the **16 GB** instance.   
 
-Under **Identify your instance** enter **Ubuntu-Hadoop-1** into the edit field. 
+Under **Identify your instance** enter **Ubuntu-Integration-Platform-1** into the edit field. 
 
 ![Alt Image Text](./images/lightsail-create-instance-4.png "Lightsail Homepage")
 
