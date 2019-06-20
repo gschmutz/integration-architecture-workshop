@@ -1,40 +1,6 @@
 version: "2.1"
 
 services:
-  zookeeper-1:
-    image: confluentinc/cp-zookeeper:5.1.2
-    container_name: zookeeper-1
-    hostname: zookeeper-1
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    restart: always
-    
-  drill:
-    image: harisekhon/apache-drill
-    container_name: drill
-    hostname: drill
-    ports: 
-      - 8047:8047
-    command: ['supervisord', '-n']  
-    environment:
-      - ZOOKEEPER_HOST=zookeeper-1:2181
-    restart: always
-
-  presto:
-    hostname: presto
-    image: 'starburstdata/presto:302-e.7'
-    container_name: presto
-    ports:
-      - '8089:8080'
-    volumes: 
-#      - './conf/presto/minio.properties:/usr/lib/presto/etc/catalog/minio.properties'
-      - './conf/presto/postgresql.properties:/usr/lib/presto/etc/catalog/postgresql.properties'
-#      - './hadoop/lib/json-serde-1.3.8-jar-with-dependencies.jar:/usr/lib/presto/lib/plugin/hive-hadoop2/json-serde-1.3.8-jar-with-dependencies.jar'
-    restart: always
-
   adminer:
     image: adminer
     container_name: adminer
@@ -54,44 +20,70 @@ services:
       POSTGRES_USER: sample
     restart: always
 
-  ftp:
-    image: stilliard/pure-ftpd
-    container_name: ftp
-    hostname: ftp
-    environment:
-#      - PUBLICHOST="192.168.25.134"
-      - FTP_USER_NAME=order
-      - FTP_USER_PASS=order
-      - FTP_USER_HOME=/home/orderentry
+  minio:
+    image: minio/minio
+    container_name: minio
+    hostname: minio
     ports:
-      - "21:21"
-      - "30000-30009:30000-30009"
-    restart: always
-      
-  activemq:
-    image: rmohr/activemq
-    container_name: activemq
-    ports:
-      # mqtt
-      - "1883:1883"
-      # amqp
-      - "5672:5672"
-      # ui
-      - "8161:8161"
-      # stomp
-      - "61613:61613"
-      # ws
-      - "61614:61614"
-      # jms
-      - "61616:61616"
+      - '9000:9000'
     volumes:
-      - ./container-volume/activemq/data:/opt/activemq/data
+      - './container-volume/minio/data/:/data'
+#      - './minio/config:/root/.minio'
+    environment:
+      MINIO_ACCESS_KEY: V42FCGRVMK24JJ8DHUYG
+      MINIO_SECRET_KEY: bKhWxVF3kQoLY9kFmt91l+tDrEoZjqnWXzY9Eza
+    command: server /data
     restart: always
- 
-  hawtio:
-    image: "indigo/hawtio"
-    container_name: hawtio
-    hostname: hawtio
+
+  awscli:
+    image: xueshanf/awscli
+    container_name: awscli
+    hostname: awscli
+    volumes:
+      - './conf/s3cfg:/root/.s3cfg'
+      - './data-transfer:/tmp/data-transfer'
+#      - './minio/config:/root/.minio'
+    environment:
+      AWS_ACCESS_KEY_ID: V42FCGRVMK24JJ8DHUYG
+      AWS_SECRET_ACCESS_KEY: bKhWxVF3kQoLY9kFmt91l+tDrEoZjqnWXzY9Eza
+    command: tail -f /dev/null
+    restart: always
+    
+  zeppelin:
+    image: trivadis/apache-zeppelin:0.8.1-hadoop-3.1.1-spark-2.4.3
+    container_name: zeppelin
+    hostname: zeppelin
     ports:
-      - "8090:8090" 
+      - "38081:8080"    
+      - "4040:4040"
+      - "42331:42331"    
+    env_file:
+      - ./conf/hadoop.env
+    environment:
+      SPARK_MASTER: "spark://spark-master:7077"
+      # set spark-master for Zeppelin interpreter
+      MASTER: "spark://spark-master:7077"
+      SPARK_DRIVER_HOST: zeppelin
+      SPARK_DRIVER_BINDADDRESS: "0.0.0.0"
+      PYSPARK_PYTHON: "python3"
+      SPARK_SUBMIT_OPTIONS: "--packages org.apache.commons:commons-lang3:3.5"
+    volumes:
+      - './conf/s3cfg:/root/.s3cfg'
+    restart: always
+
+  # make sure to get Spark to fit with the version of spark master 
+  # - 2.4.0 tag 59b402ce701d
+  # - 2.4.3 tag abdb27a6dfbb
+  jupyter:
+    image: jupyter/all-spark-notebook:abdb27a6dfbb
+    container_name: jupyter
+    hostname: jupyter
+    ports: 
+      - "38888:8888"
+    environment:
+      JUPYTER_ENABLE_LAB: "true"
+      JUPYTER_TOKEN: "abc123"
+      GRANT_SUDO: "true"
+      TINI_SUBREAPER: "true"
+    restart: always
 

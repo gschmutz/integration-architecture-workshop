@@ -12,28 +12,38 @@ So let's add a new service to the docker-compose.yml file we have created in [Se
 
 ```
   activemq:
-    image: rmohr/activemq:5.15.4
-    hostname: activemq
+    image: rmohr/activemq
+    container_name: activemq
     ports:
-      - 61616:61616
-      - 8161:8161
+      # mqtt
+      - "1883:1883"
+      # amqp
+      - "5672:5672"
+      # ui
+      - "8161:8161"
+      # stomp
+      - "61613:61613"
+      # ws
+      - "61614:61614"
+      # jms
+      - "61616:61616"
     volumes:
-      - ./container_data/activemq/data:/opt/activemq/data
+      - ./container-volume/activemq/data:/opt/activemq/data
     restart: always
-    
+ 
   hawtio:
     image: "indigo/hawtio"
+    container_name: hawtio
     hostname: hawtio
     ports:
-      - "8090:8090"
-    restart: always
+      - "8090:8090" 
 ```
 
 The service will map the data folder to a folder on the docker host. Therefore we have to create it below the container_data created in the setup and give it the necessary access privileges.
 
 ```
 cd integrationplatform
-mkdir -p container_data/activemq/data
+mkdir -p container-volume/activemq/data
 chmod 777 -R container_data
 ```
 	
