@@ -30,9 +30,11 @@ The following service are available as part of the platform:
 
 Type | Service | Url
 ------|------- | -------------
+Development | Apache Zeppelin | <http://integrationplatform:38081>
 Development | StreamSets Data Collector | <http://integrationplatform:18630>
 Governance | Schema Registry UI  | <http://integrationplatform:8002>
-Governance | Schema Registry Rest API  | <http://integrationplatform:8081>
+Management | Adminer | <http://integrationplatform:38080>
+Management | Minio | <http://integrationplatform:9000/hawtio>
 Management | Hawtio | <http://integrationplatform:8090/hawtio>
 Management | ActiveMQ Admin | <http://integrationplatform:8161>
 Management | Servicemix | <http://integrationplatform:8161>
