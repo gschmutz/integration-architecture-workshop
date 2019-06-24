@@ -93,10 +93,9 @@ Follow the instructions below to retrieve a file from a FTP server.
 
 17. Now also check that the file has been copied to the `/tmp` folder inside the **spoon** container
 
-	```
+```
 docker exec -ti spoon ls /tmp/sales_data.csv
 ```
-
 
 ## Retrieving Data from a Flat File
 
