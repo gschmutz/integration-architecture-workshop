@@ -1,8 +1,0 @@
-server:
-  port: 8092
-
-spring:
-  activemq:
-    user: "admin"
-    password: "admin"
-    broker-url: "tcp://localhost:61616?jms.redeliveryPolicy.maximumRedeliveries=1"
