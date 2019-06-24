@@ -186,8 +186,8 @@ After completing **Filter Records with Missing Postal Codes**, you are ready to 
      * Click the **SQL** button at the bottom of the **Table output** dialog box to generate the DDL for creating your target table.
      * The **Simple SQL** editor window appears with the SQL statements needed to create the table.
 
-![Alt Image Text](./images/transform-create-table.png "Transform")
-
+	![Alt Image Text](./images/transform-create-table.png "Transform")
+     
      * Click **Execute** to execute the SQL statement.  
      * The Results of the SQL statements window appears.  Examine the results, then click **OK** to close the **Results of the SQL statements** window.  
      * Click **Close** in the **Simple SQL editor** window to close it.
