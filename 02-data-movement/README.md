@@ -188,6 +188,7 @@ After completing **Filter Records with Missing Postal Codes**, you are ready to 
 
 	![Alt Image Text](./images/transform-create-table.png "Transform")
      
+     
      * Click **Execute** to execute the SQL statement.  
      * The Results of the SQL statements window appears.  Examine the results, then click **OK** to close the **Results of the SQL statements** window.  
      * Click **Close** in the **Simple SQL editor** window to close it.
