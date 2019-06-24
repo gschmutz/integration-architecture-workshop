@@ -159,9 +159,9 @@ After completing **Retrieve Data from a Flat File**, you are ready to add the ne
   8. Click **OK​** to close the Functions: window.
   9. Click **OK** to exit the Filter Rows window.
 
-	**Note**: You will return to this step later and configure the Send true data to step and Send false data to step settings after adding their target steps to your transformation.
+**Note**: You will return to this step later and configure the Send true data to step and Send false data to step settings after adding their target steps to your transformation.
 
-  10. Select **File** | **Save** to save your transformation.
+Select **File** | **Save** to save your transformation.
 
 ## Loading Your Data into a Relational Database
 
@@ -185,10 +185,6 @@ After completing **Filter Records with Missing Postal Codes**, you are ready to 
      * In the **Table Output** window, enable the **Truncate Table** property.
      * Click the **SQL** button at the bottom of the **Table output** dialog box to generate the DDL for creating your target table.
      * The **Simple SQL** editor window appears with the SQL statements needed to create the table.
-
-	![Alt Image Text](./images/transform-create-table.png "Transform")
-     
-     
      * Click **Execute** to execute the SQL statement.  
      * The Results of the SQL statements window appears.  Examine the results, then click **OK** to close the **Results of the SQL statements** window.  
      * Click **Close** in the **Simple SQL editor** window to close it.
