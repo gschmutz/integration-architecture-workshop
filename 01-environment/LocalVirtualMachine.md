@@ -37,9 +37,6 @@ cd integration-architecture-workshop/01-environment/docker
 And finally let's start the environment:
 
 ```
-# Make sure that the environment is not running
-docker-compose down
-
 # Startup Environment
 docker-compose up -d
 ```
