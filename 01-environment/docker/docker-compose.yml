@@ -9,15 +9,17 @@ services:
     restart: always
 
   postgresql:
-    image: postgres:10
+    image: postgres:11
     container_name: postgresql
     hostname: postgresql
     volumes: 
       - ./sql/create-driver.sql:/docker-entrypoint-initdb.d/create-driver.sql
     environment:
-      POSTGRES_DB: sample
-      POSTGRES_PASSWORD: sample
-      POSTGRES_USER: sample
+      POSTGRES_DB: orderproc
+      POSTGRES_PASSWORD: orderproc
+      POSTGRES_USER: orderproc
+    ports:
+      - 5432:5432
     restart: always
 
   minio:
@@ -48,6 +50,36 @@ services:
       AWS_SECRET_ACCESS_KEY: bKhWxVF3kQoLY9kFmt91l+tDrEoZjqnWXzY9Eza
     command: tail -f /dev/null
     restart: always
+  
+  ftp:
+    image: stilliard/pure-ftpd
+    container_name: ftp
+    hostname: ftp
+    environment:
+#      - PUBLICHOST="192.168.73.86"
+      - PUBLICHOST=ftp
+      - FTP_USER_NAME=orderproc
+      - FTP_USER_PASS=orderproc
+      - FTP_USER_HOME=/home/ftp-data
+      - FTP_MAX_CLIENTS=9
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    restart: always
+
+  filezilla:
+    image: jlesage/filezilla
+    container_name: filezilla
+    volumes: 
+      - ./data-transfer:/data-transfer
+    ports:
+      - "5800:5800"
+      - "5900:5900"
+#    volumes:
+#      - "/docker/appdata/filezilla:/config:rw"
+#      - "/files:/storage:rw"
+    environment:
+      - VNC_PASSWORD=admin123  
     
   zeppelin:
     image: trivadis/apache-zeppelin:0.8.1-hadoop-3.1.1-spark-2.4.3
