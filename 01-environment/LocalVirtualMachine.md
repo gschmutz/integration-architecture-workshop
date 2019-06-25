@@ -26,8 +26,8 @@ sudo sysctl -w vm.max_map_count=262144
 Now let's checkout the NoSQL Workshop project from GitHub:
 
 ```
-# Get the project
-cd /home/bigdata
+# Get the project into the "home directory" of the current user
+cd 
 git clone https://github.com/gschmutz/integration-architecture-workshop.git
 cd integration-architecture-workshop/01-environment/docker
 ```
