@@ -24,6 +24,8 @@ If it doesn't work, then you can also download it to your local machine as shown
 
 ### In Docker Compose as a Web application (experimental)
 
+Add the following service to the `docker-compose.yml`
+
 ```
   webspoon:
     image: hiromuhota/webspoon
@@ -35,6 +37,8 @@ If it doesn't work, then you can also download it to your local machine as shown
       - '38084:8080'
     restart: always
 ```
+
+and (re)execute a `docker-compose up -d`.
 
 ### Locally
 
