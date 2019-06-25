@@ -226,3 +226,10 @@ Data Integration provides a number of deployment options. Running a Transformati
   * **The Logging** tab displays the logging details for the most recent execution of the transformation. It also allows you to drill deeper to determine where errors occur.  Error lines are highlighted in red.  In the example below, the **Lookup Missing Zips** step caused an error because it attempted to lookup values on a field called `POSTALCODE2`, which did not exist in the lookup stream. 
 
 	![Alt Image Text](./images/run-transform-logging.png "Transform")
+
+## Check that the data has been loaded to PostgreSQL
+
+You can use the graphical UI **Adminer** to connect to PostgreSQL and execute SQL statements. 
+
+1. Navigate to <http://integrationplatform:28081> to open Adminer in a browser window.
+2. 
