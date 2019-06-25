@@ -4,8 +4,9 @@ The Data Integration perspective of Spoon allows you to create two basic file ty
 
 This exercise will step you through building your first transformation with Pentaho Data Integration introducing common concepts along the way. The exercise scenario includes a flat file (.csv) of sales data that you will load into a database so that mailing lists can be generated. Several of the customer records are missing postal codes (zip codes) that must be resolved before loading into the database. The logic looks like this:
 
-## Starting Penthao using a Docker Container
+## Starting Penthao
 
+### In a Docker Container
 As Penthao is a Fat Client Application, we cannot start it as part of the Docker Compose stack. But we can also start it using a docker container and reference the network using the `--network` argument, so that we can access the different infrastructure element using the service names from the docker compose definition. 
 
 In a terminal window, execute the following command and the Penthao splash screen should show up
@@ -19,7 +20,19 @@ docker run -it --rm -v /tmp/.X11-unix/:/tmp/.X11-unix/:ro \
         andrespp/pdi spoon
 ```
 
-If it doesn't work, then you can also download it to your local machine.
+If it doesn't work, then you can also download it to your local machine as shown in the next section. In the Virtual Machine provided it is already available in `/home/bigdata/data-integration`. 
+
+### Locally
+
+To work with Penthao locally, you can download Penthao 7.1 from here
+
+```
+https://sourceforge.net/projects/pentaho/files/Data%20Integration/7.1/pdi-ce-7.1.0.0-12.zip/download
+```
+
+and then unzip it to a local folder.
+
+Navigate to the newly created folder `data-integration` and run either `spoon.sh` if on Linux or `spoon.bat` on Windows.
 
 ## Make sure that there is some data on the FTP server
 
