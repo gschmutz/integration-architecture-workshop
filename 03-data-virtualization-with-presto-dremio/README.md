@@ -197,7 +197,7 @@ Make sure that the `presto` service is started as part of the analyticsplatform 
       - '8089:8080'
     volumes: 
       - './conf/minio.properties:/usr/lib/presto/etc/catalog/minio.properties'
-      - './conf/postgresql.properties:/usr/lib/presto/etc/catalog/minio.properties'
+      - './conf/postgresql.properties:/usr/lib/presto/etc/catalog/postgresql.properties'
     restart: always
 ```
 
