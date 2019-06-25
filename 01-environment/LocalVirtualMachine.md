@@ -49,6 +49,14 @@ The output should be similar to the one below.
 
 Your instance is now ready to use. Complete the post installation steps documented the [here](README.md).
 
+## Show Log Info
+
+To show the log information of all the services running as the docker compose stack
+
+```
+docker-compose logs -f
+```
+
 ## Stop environment
 
 To stop the environment, execute the following command:
@@ -64,5 +72,6 @@ To stop and remove all running container, execute the following command:
 ```
 docker-compose down
 ```
+
 
 
