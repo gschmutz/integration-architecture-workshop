@@ -22,6 +22,20 @@ docker run -it --rm -v /tmp/.X11-unix/:/tmp/.X11-unix/:ro \
 
 If it doesn't work, then you can also download it to your local machine as shown in the next section. In the Virtual Machine provided it is already available in `/home/bigdata/data-integration`. 
 
+### In Docker Compose as a Web application (experimental)
+
+```
+  webspoon:
+    image: hiromuhota/webspoon
+    container_name: webspoon
+    hostname: webspoon
+    volumes:
+      - ./data-transfer:/data-transfer
+    ports:
+      - '38084:8080'
+    restart: always
+```
+
 ### Locally
 
 To work with Penthao locally, you can download Penthao 7.1 from here
