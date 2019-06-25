@@ -34,7 +34,7 @@ Development | Apache Zeppelin | <http://integrationplatform:38081>
 Development | StreamSets Data Collector | <http://integrationplatform:18630>
 Governance | Schema Registry UI  | <http://integrationplatform:8002>
 Management | Adminer | <http://integrationplatform:38080>
-Management | Minio | <http://integrationplatform:9000/hawtio>
+Management | Minio | <http://integrationplatform:9000>
 Management | Hawtio | <http://integrationplatform:8090/hawtio>
 Management | ActiveMQ Admin | <http://integrationplatform:8161>
 Management | Servicemix | <http://integrationplatform:8161>
