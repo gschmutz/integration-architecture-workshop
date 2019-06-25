@@ -1,11 +1,24 @@
 version: "2.1"
 
 services:
+
+  traefik:
+    image: traefik
+    container_name: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./conf/traefik.toml:/etc/traefik/traefik.toml
+    ports:
+      - 80:80
+    restart: always
+
   adminer:
     image: adminer
     container_name: adminer
-    ports:
-      - 28081:8080
+    labels:
+      - "traefik.enable=true"
+      - "traefik.basic.frontend.rule=Host:adminer.vcap.me"
+      - "traefik.basic.port=8080"
     restart: always
 
   postgresql:
@@ -26,11 +39,13 @@ services:
     image: minio/minio
     container_name: minio
     hostname: minio
-    ports:
-      - '9000:9000'
     volumes:
       - './container-volume/minio/data/:/data'
 #      - './minio/config:/root/.minio'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.basic.frontend.rule=Host:minio.vcap.me"
+      - "traefik.basic.port=9000"
     environment:
       MINIO_ACCESS_KEY: V42FCGRVMK24JJ8DHUYG
       MINIO_SECRET_KEY: bKhWxVF3kQoLY9kFmt91l+tDrEoZjqnWXzY9Eza
@@ -75,6 +90,10 @@ services:
     ports:
       - "5800:5800"
       - "5900:5900"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.basic.frontend.rule=Host:filezilla.vcap.me"
+      - "traefik.basic.port=5800"
 #    volumes:
 #      - "/docker/appdata/filezilla:/config:rw"
 #      - "/files:/storage:rw"
