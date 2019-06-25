@@ -26,8 +26,8 @@ sudo sysctl -w vm.max_map_count=262144
 Now let's checkout the NoSQL Workshop project from GitHub:
 
 ```
-# Get the project
-cd /home/bigdata
+# Get the project into the "home directory" of the current user
+cd 
 git clone https://github.com/gschmutz/integration-architecture-workshop.git
 cd integration-architecture-workshop/01-environment/docker
 ```
@@ -49,6 +49,14 @@ The output should be similar to the one below.
 
 Your instance is now ready to use. Complete the post installation steps documented the [here](README.md).
 
+## Show Log Info
+
+To show the log information of all the services running as the docker compose stack
+
+```
+docker-compose logs -f
+```
+
 ## Stop environment
 
 To stop the environment, execute the following command:
@@ -64,5 +72,6 @@ To stop and remove all running container, execute the following command:
 ```
 docker-compose down
 ```
+
 
 
