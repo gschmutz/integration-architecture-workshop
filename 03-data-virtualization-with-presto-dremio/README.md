@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this workshop we will work with [Startburst Presto](https://www.starburstdata.com/) and [Dremio](http://dremio.com) to play with Data Virtualization. 
+In this workshop we will work with [Startburst Presto](https://www.starburstdata.com/) and [Dremio](http://dremio.com) to play with **Data Virtualisation**. 
 
 We will access the data from both PostgreSQL Database as well as Object Storage, which can either be [MinIO](https://min.io/) as shown in the workshop, [Amazon S3](https://aws.amazon.com/s3/) or any other cloud Object Storage solution. 
 
@@ -10,11 +10,15 @@ We assume that the **Integration platform** described [here](../01-environment) 
 
 The data needed for this workshop are available in the `data-transfer` folder.
 
-##	 Accessing MinIO
+## Preparing some test data in MinIO and PostgreSQL
+
+First let's create the necessary data in MinIO and PostgreSQL. We first upload some files to Object Storage and register its metadata in Hive Metastore, so that the data is available in form of tables queryable through SQL.
+
+### Working with MinIO
 
 [MinIO](https://min.io/) is an object storage server released under Apache License v2.0. It is compatible with Amazon S3 cloud storage service. It is best suited for storing unstructured data such as photos, videos, log files, backups and container / VM images. Size of an object can range from a few KBs to a maximum of 5TB.
 
-There are various ways for accessing Spark
+There are various ways for accessing MinIO
 
  * **S3cmd** - a command line S3 client for working with S3 compliant object stores
  * **MinIO UI** - a browser based GUI for working with MinIO
@@ -22,7 +26,7 @@ There are various ways for accessing Spark
 
 These are only a few of the tools available to work with S3. And because an Object Store is in fact a drop-in replacement for HDFS, we can also use it from the tools in the Big Data ecosystem such as Hadoop Hive, Spark, ...
 
-### Using S3cmd
+#### Using S3cmd
 
 [S3cmd](https://s3tools.org/s3cmd) is a command line utility for working with S3. 
 
@@ -36,7 +40,7 @@ docker exec -ti awscli s3cmd -h
 
 This can also be found on the [S3cmd usage page](https://s3tools.org/usage).
 
-### Using MinIO UI
+#### Using MinIO UI
 
 In a browser window, navigate to <http://analyticsplatform:9000> and you should see login screen. Enter `V42FCGRVMK24JJ8DHUYG` into the **Access Key** and  `bKhWxVF3kQoLY9kFmt91l+tDrEoZjqnWXzY9Eza ` into the **Secret Key** field and click on the connect button.  
 The MinIO homepage should now appear.
@@ -47,7 +51,7 @@ Click on the **+** icon at the lower right corner to either perform an **Create 
 
 ![Alt Image Text](./images/minio-action-menu.png "Minio Action Menu")
 
-### Using Apache Zeppelin
+#### Using Apache Zeppelin
 
 Before we can use the `s3cmd` from within Apache Zeppelin, we need to provide the `.s3cfg` config file, which configures the object store to use as the default. The [../01-environment/docker/conf/s3cfg](../01-environment/docker/conf/s3cfg) holds the configuration of the Minio instance of our environment. 
 
@@ -71,13 +75,13 @@ Here you can use `s3cmd` from within a cell in a notebook using the `%sh` interp
 
 ![Alt Image Text](./images/zeppelin-s3cmd.png "Zepplin S3cmd")
 
-##	 Moving data to Object Storage
+###	 Moving data to MinIO
 
 Let's upload the files of the Hive workshop to the object storage. 
 
 First we have to create a bucket.
 
-### Create a Bucket
+#### Create a Bucket
 
 Here are the commands to perform when using the **S3cmd** on the command line
 
@@ -102,7 +106,7 @@ or you could also use `s3cmd ls` to list all buckets.
 docker exec -ti awscli s3cmd ls s3://
 ```
 
-### Upload the files to the bucket
+#### Upload the files to the bucket
 
 To upload a file we are going to use the `s3cmd put` command. First for the `trucks.csv`
 
@@ -186,167 +190,25 @@ bigdata@bigdata:~/hadoop-workshop/01-environment/docker$ docker exec -ti awscli 
 2019-05-28 11:18     76854   s3://truck-bucket/result/parquet/truck_mileage.parquet
 ```
 
-We have successfully uploaded the necessary files as object into the Object Storage. Now let's use Spark to access the objects in MinIO. 
+We have successfully uploaded the necessary files as object into the Object Storage. 
 
-## Using Presto to access Object Storage
+## Driver Information in PostgreSQL
 
-[Presto](https://prestosql.io/) is a distributed SQL query engine designed to query large data sets distributed over one or more heterogeneous data sources. Presto can natively query data in Hadoop, S3, Cassandra, MySQL, and many others, without the need for complex and error-prone processes for copying the data to a proprietary storage system. You can access data from multiple systems within a single query. For example, join historic log data stored in S3 with real-time customer data stored in MySQL. This is called **query federation**.
-
-Make sure that the `presto` service is started as part of the analyticsplatform environment. The following definition has to be in the `docker-compose.yml` file. 
-
-```
-  presto:
-    hostname: presto
-    image: 'starburstdata/presto:302-e.7'
-    container_name: presto
-    ports:
-      - '8089:8080'
-    volumes: 
-      - './conf/minio.properties:/usr/lib/presto/etc/catalog/minio.properties'
-      - './conf/postgresql.properties:/usr/lib/presto/etc/catalog/postgresql.properties'
-    restart: always
-    
-  hive-metastore:
-    image: johannestang/hive:2.3.4-postgresql-metastore-s3
-    container_name: hive-metastore
-    hostname: hive-metastore
-    ports:
-      - "9083:9083"
-    env_file:
-      - ./conf/hadoop.env
-    command: /opt/hive/bin/hive --service metastore
-    environment:
-      - "SERVICE_PRECONDITION=hive-metastore-postgresql:5432"
-    restart: always
-  
-  hive-metastore-postgresql:
-    container_name: hive-metastore-postgresql
-    hostname: hive-metastore-postgresql
-    image: bde2020/hive-metastore-postgresql:2.3.0
-    restart: always    
-```
-
-Create `minio.properties` file in the folder `conf` and add the following property definition: 
-
-```
-connector.name=hive-hadoop2
-hive.metastore.uri=thrift://hive-metastore:9083
-hive.s3.path-style-access=true
-hive.s3.endpoint=http://minio:9000
-hive.s3.aws-access-key=V42FCGRVMK24JJ8DHUYG
-hive.s3.aws-secret-key=bKhWxVF3kQoLY9kFmt91l+tDrEoZjqnWXzY9Eza
-hive.non-managed-table-writes-enabled=true
-hive.s3.ssl.enabled=false
-```
-
-The docker image we use for the Presto container is from [Starbrust Data](https://www.starburstdata.com/), the company offering an Enterprise version of Presto. 
-
-#### Create Table in Hive Metastore
-
-In order to access data in HDFS or S3 using Presto, we have to create a table in the Hive metastore. Note that the location 's3a://truck-bucket/result/parquet' points to the data we have uploaded before.
-
-Connect to hive CLI
-
-```
-docker exec -ti hive-metastore hive
-```
-
-and on the command prompt, execute the following `CREATE TABLE` statement.
-
-```
-CREATE EXTERNAL TABLE truck_mileage 
-(truckid string, driverId string, rdate string, miles integer, gas integer, mpg double) 
-STORED AS parquet 
-LOCATION 's3a://truck-bucket/result/parquet/'; 
-```
-
-You can already test the mapping inside Hive:
-
-```
-SELECT *
-FROM truck_mileage;
-```
-
-#### Query Hive Table from Presto
-
-Next let's query the data from Presto. Connect to the Presto CLI using
-
-```
-docker exec -it presto presto-cli
-```
-
-Now on the Presto command prompt, switch to the right database. 
-
-```
-use minio.default;
-```
-
-Let's see that there is one table available:
-
-```
-show tables;
-```
-
-We can see the `truck_mileage` table we created in the Hive Metastore before
-
-```
-presto:default> show tables;
-     Table
----------------
- truck_mileage
-(1 row)
-```
-
-We can use the `DESCRIBE` command to see the structure of the table:
-
-```
-DESCRIBE minio.default.truck_mileage;
-```
-
-and you should get the following result
-
-```
-presto> DESCRIBE minio.default.truck_mileage;
-  Column  |  Type   | Extra | Comment
-----------+---------+-------+---------
- truckid  | varchar |       |
- driverid | varchar |       |
- rdate    | varchar |       |
- miles    | integer |       |
- gas      | integer |       |
- mpg      | double  |       |
-```
-
-We can query the table from the current database
-
-```
-SELECT * FROM truck_mileage;
-```
-
-We can execute the same query, but now with a fully qualified table, including the database:
-
-```
-SELECT * 
-FROM minio.default.truck_mileage;
-```
-
-Presto also provides the [Presto UI](http://analyticsplatform:8089) for monitoring the queries executed on the presto server. 
-
-## Using Presto to access a Relational Database
-
-Make sure that the `postgresql` service is configured in the `docker-compose.yml`. 
+A Postgresql instance called `postgresql` is available as part of the the **Integration platform** described [here](../01-environment).
 
 ```
   postgresql:
-    image: postgres:10
+    image: postgres:11
     container_name: postgresql
     hostname: postgresql
     volumes: 
       - ./sql/create-driver.sql:/docker-entrypoint-initdb.d/create-driver.sql
     environment:
-      POSTGRES_DB: truckdb
-      POSTGRES_PASSWORD: truck
-      POSTGRES_USER: truck
+      POSTGRES_DB: orderproc
+      POSTGRES_PASSWORD: orderproc
+      POSTGRES_USER: orderproc
+    ports:
+      - 5432:5432
     restart: always
 ```
 
@@ -460,7 +322,169 @@ insert into truck.driver (id, id_str, first_name, last_name, email, gender) valu
 insert into truck.driver (id, id_str, first_name, last_name, email, gender) values (100, 'A100', 'Norton', 'Geach', 'ngeach2r@admin.ch', 'Male');
 ```
 
-This script first creates a `schema` and then adds the table `driver` with information of our truck drivers. 
+This script first creates a `schema` and then adds the table `driver` with information of our truck drivers.
+
+You can use the **Adminer** tool on <http://integrationplatform:28081> to browse the data in PostreSQL. 
+
+
+## Data Virtualisation with Presto
+
+[Presto](https://prestosql.io/) is a distributed SQL query engine designed to query large data sets distributed over one or more heterogeneous data sources. Presto can natively query data in Hadoop, S3, Cassandra, MySQL, and many others, without the need for complex and error-prone processes for copying the data to a proprietary storage system. You can access data from multiple systems within a single query. For example, join historic log data stored in S3 with real-time customer data stored in MySQL. 
+
+### Using Presto to access data in Object Storage (MinIO)
+
+First add the `presto` service to the **Integration Platform**. The following definition has to be added to the `docker-compose.yml` file. 
+
+```
+  presto:
+    hostname: presto
+    image: 'starburstdata/presto:302-e.7'
+    container_name: presto
+    ports:
+      - '8089:8080'
+    volumes: 
+      - './conf/minio.properties:/usr/lib/presto/etc/catalog/minio.properties'
+      - './conf/postgresql.properties:/usr/lib/presto/etc/catalog/postgresql.properties'
+    restart: always
+ ```
+ 
+In order to connect from Presto to data in an Object Store (MinIO) we also need a Hive Metastore running. Add the following two services, which start the metastore service as well as another PostgreSQL instance holding the metadata schema. 
+ 
+ ```   
+  hive-metastore:
+    image: johannestang/hive:2.3.4-postgresql-metastore-s3
+    container_name: hive-metastore
+    hostname: hive-metastore
+    ports:
+      - "9083:9083"
+    env_file:
+      - ./conf/hadoop.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      - "SERVICE_PRECONDITION=hive-metastore-postgresql:5432"
+    restart: always
+  
+  hive-metastore-postgresql:
+    container_name: hive-metastore-postgresql
+    hostname: hive-metastore-postgresql
+    image: bde2020/hive-metastore-postgresql:2.3.0
+    restart: always    
+```
+
+Now you can restart the stack using `docker-compose up -d`. 3 new services should be added to the running stack. 
+
+The connection to object storage is held in the [`minio.properties`](../01-environment/docker/conf/presto/minio.properties) file and contains the following settings: 
+
+```
+connector.name=hive-hadoop2
+hive.metastore.uri=thrift://hive-metastore:9083
+hive.s3.path-style-access=true
+hive.s3.endpoint=http://minio:9000
+hive.s3.aws-access-key=V42FCGRVMK24JJ8DHUYG
+hive.s3.aws-secret-key=bKhWxVF3kQoLY9kFmt91l+tDrEoZjqnWXzY9Eza
+hive.non-managed-table-writes-enabled=true
+hive.s3.ssl.enabled=false
+```
+
+The docker image we use for the Presto container is from [Starbrust Data](https://www.starburstdata.com/), the company offering an Enterprise version of Presto. 
+
+Now let's use the Hive metastore to create the Hive table. 
+
+#### Create Table in Hive Metastore
+
+In order to access data in HDFS or S3 using Presto, we have to create a table in the Hive metastore. Note that the location 's3a://truck-bucket/result/parquet' points to the data we have uploaded before.
+
+Connect to hive CLI
+
+```
+docker exec -ti hive-metastore hive
+```
+
+and on the command prompt, execute the following `CREATE TABLE` statement.
+
+```
+CREATE EXTERNAL TABLE truck_mileage 
+(truckid string, driverId string, rdate string, miles integer, gas integer, mpg double) 
+STORED AS parquet 
+LOCATION 's3a://truck-bucket/result/parquet/'; 
+```
+
+You can directly test the mapping inside Hive:
+
+```
+SELECT *
+FROM truck_mileage;
+```
+
+With the mapping in place, we can now use Presto and query it from there. 
+
+#### Query Hive Table from Presto
+
+Next let's query the data from Presto. Connect to the Presto CLI using
+
+```
+docker exec -it presto presto-cli
+```
+
+Now on the Presto command prompt, switch to the right database. 
+
+```
+use minio.default;
+```
+
+Let's see that there is one table available:
+
+```
+show tables;
+```
+
+We can see the `truck_mileage` table we created in the Hive Metastore before
+
+```
+presto:default> show tables;
+     Table
+---------------
+ truck_mileage
+(1 row)
+```
+
+We can use the `DESCRIBE` command to see the structure of the table:
+
+```
+DESCRIBE minio.default.truck_mileage;
+```
+
+and you should get the following result
+
+```
+presto> DESCRIBE minio.default.truck_mileage;
+  Column  |  Type   | Extra | Comment
+----------+---------+-------+---------
+ truckid  | varchar |       |
+ driverid | varchar |       |
+ rdate    | varchar |       |
+ miles    | integer |       |
+ gas      | integer |       |
+ mpg      | double  |       |
+```
+
+We can query the table from the current database
+
+```
+SELECT * FROM truck_mileage;
+```
+
+We can execute the same query, but now with a fully qualified table, including the database:
+
+```
+SELECT * 
+FROM minio.default.truck_mileage;
+```
+
+Presto also provides the [Presto UI](http://analyticsplatform:8089) for monitoring the queries executed on the presto server. 
+
+### Using Presto to access data in a Relational Database
+ 
 
 Now let's query this table using presto. Connect to the `presto-cli`
 
@@ -530,7 +554,7 @@ SELECT *
 FROM postgresql.truck.driver;
 ```
 
-## Query Federation using Presto
+### Query Federation using Presto
 
 With the `driver` table available in the Postgresql and the `truck_mileage` available in the Object Store through Hive, we can use Presto's query federation capabilities to join the two tables using a `SELECT ... FROM ... LEFT JOIN` statement: 
 
@@ -541,3 +565,7 @@ LEFT JOIN postgresql.truck.driver AS d
 ON (tm.driverid = d.id_str)
 WHERE rdate = 'jun13'; 
 ```
+
+## Data Virtualisation with Dremio
+
+Not yet available ...
