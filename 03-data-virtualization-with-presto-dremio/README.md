@@ -418,16 +418,16 @@ presto> DESCRIBE postgresql.truck.driver;
 
 ```
 
-Last but not least let's see the `driver` data in Presto. 
+Last but not least lets see the `driver` data in Presto. 
 
 ```
 SELECT * 
 FROM postgresql.truck.driver;
 ```
 
-### Query Federation using Presto
+### Joining Data using Presto
 
-With the `driver` table available in the Postgresql and the `truck_mileage` available in the Object Store through Hive, we can use Presto's query virtualization capabilities to join the two tables using a `SELECT ... FROM ... LEFT JOIN` statement: 
+With the `driver` table available in the Postgresql and the `truck_mileage` available in the Object Store through Hive, we can use Presto's join capabilities to join the two tables using a `SELECT ... FROM ... LEFT JOIN` statement: 
 
 ```
 SELECT d.id, d.id_str, d.first_name, d.last_name, tm.truckid, tm.miles, tm.gas 
