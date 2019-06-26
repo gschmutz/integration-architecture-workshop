@@ -172,6 +172,12 @@ docker exec -ti awscli s3cmd put /tmp/data-transfer/truckdata/truck_mileage.orc 
 Let's again show the objects using the `s3cmd ls -r s3://truck-bucket` command:
 
 ```
+docker exec -ti awscli s3cmd ls -r  s3://truck-bucket/
+```
+
+and we should get a result similar to the one shown below
+
+```
 bigdata@bigdata:~/hadoop-workshop/01-environment/docker$ docker exec -ti awscli s3cmd ls -r s3://truck-bucket/
 2019-05-28 11:17    526677   s3://truck-bucket/raw/geolocation.csv
 2019-05-28 11:15     61378   s3://truck-bucket/raw/trucks.csv
@@ -197,8 +203,27 @@ Make sure that the `presto` service is started as part of the analyticsplatform 
       - '8089:8080'
     volumes: 
       - './conf/minio.properties:/usr/lib/presto/etc/catalog/minio.properties'
-      - './conf/postgresql.properties:/usr/lib/presto/etc/catalog/minio.properties'
+      - './conf/postgresql.properties:/usr/lib/presto/etc/catalog/postgresql.properties'
     restart: always
+    
+  hive-metastore:
+    image: johannestang/hive:2.3.4-postgresql-metastore-s3
+    container_name: hive-metastore
+    hostname: hive-metastore
+    ports:
+      - "9083:9083"
+    env_file:
+      - ./conf/hadoop.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      - "SERVICE_PRECONDITION=hive-metastore-postgresql:5432"
+    restart: always
+  
+  hive-metastore-postgresql:
+    container_name: hive-metastore-postgresql
+    hostname: hive-metastore-postgresql
+    image: bde2020/hive-metastore-postgresql:2.3.0
+    restart: always    
 ```
 
 Create `minio.properties` file in the folder `conf` and add the following property definition: 
@@ -223,7 +248,7 @@ In order to access data in HDFS or S3 using Presto, we have to create a table in
 Connect to hive CLI
 
 ```
-docker exec -ti hive-server hive
+docker exec -ti hive-metastore hive
 ```
 
 and on the command prompt, execute the following `CREATE TABLE` statement.
