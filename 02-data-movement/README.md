@@ -44,9 +44,8 @@ and (re)execute a `docker-compose up -d`.
 
 To work with Penthao locally, you can download Penthao 7.1 from here
 
-```
-https://sourceforge.net/projects/pentaho/files/Data%20Integration/7.1/pdi-ce-7.1.0.0-12.zip/download
-```
+
+<https://sourceforge.net/projects/pentaho/files/Data%20Integration/7.1/pdi-ce-7.1.0.0-12.zip/download>
 
 and then unzip it to a local folder.
 
