@@ -1,0 +1,33 @@
+version: "2.1"
+
+services:
+
+  presto:
+    hostname: presto
+    image: 'starburstdata/presto:302-e.7'
+    container_name: presto
+    ports:
+      - '8089:8080'
+    volumes: 
+      - './conf/presto/minio.properties:/usr/lib/presto/etc/catalog/minio.properties'
+      - './conf/presto/postgresql.properties:/usr/lib/presto/etc/catalog/postgresql.properties'
+    restart: always
+
+  hive-metastore:
+    image: johannestang/hive:2.3.4-postgresql-metastore-s3
+    container_name: hive-metastore
+    hostname: hive-metastore
+    ports:
+      - "9083:9083"
+    env_file:
+      - ./conf/hadoop.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      - "SERVICE_PRECONDITION=hive-metastore-postgresql:5432"
+    restart: always
+  
+  hive-metastore-postgresql:
+    container_name: hive-metastore-postgresql
+    hostname: hive-metastore-postgresql
+    image: bde2020/hive-metastore-postgresql:2.3.0
+    restart: always
