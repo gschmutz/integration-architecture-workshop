@@ -10,6 +10,12 @@ You have the following options to start the environment:
  * [**Local Docker Environment**](./LocalDocker.md) - you have a local Docker and Docker Compose setup in place which you want to use
  * [**AWS Lightsail Environment**](./Lightsail.md) - AWS Lightsail is a service in Amazon Web Services (AWS) with which we can easily startup an environment and provide all the necessary bootstrapping as a script.
 
+This forms the base environment with some base services such as *Apache Zeppelin** and **Jupyter** for Python development, a **PotgreSQL** instance, an **FTP Server** and **S3-compliant Object Storage based on MinIO**. Additionally some UI Tools for working with these services are part of this base environment as well. 
+
+Each workshop may add additional services, just needed for this workshop. This way we can keep the requirements for memory on the Docker Machine to a minimum. 
+It's recommended to add these additional services to a separate file called `docker-compose.override.yml` in the same folder as the `docker-compose.yml`. 
+
+By default, Compose reads two files, the `docker-compose.yml` and an optional `docker-compose.override.yml` file. By convention, the `docker-compose.yml` contains the base configuration. The override file, as its name implies, can contain configuration overrides for existing services or entirely new services.
 
 ## Post Provisioning
 
@@ -31,13 +37,15 @@ The following service are available as part of the platform:
 Type | Service | Url
 ------|------- | -------------
 Development | Apache Zeppelin | <http://integrationplatform:38081>
-Development | StreamSets Data Collector | <http://integrationplatform:18630>
-Governance | Schema Registry UI  | <http://integrationplatform:8002>
+Development | Jupyter | <http://integrationplatform:38888>
 Management | Adminer | <http://integrationplatform:38080>
 Management | Minio | <http://integrationplatform:9000>
+Management | Presto | <http://integrationplatform:8089>
 Management | Hawtio | <http://integrationplatform:8090/hawtio>
 Management | ActiveMQ Admin | <http://integrationplatform:8161>
 Management | Servicemix | <http://integrationplatform:8161>
 Management | Kafka Manager  | <http://integrationplatform:39000>
+Development | StreamSets Data Collector | <http://integrationplatform:18630>
+Governance | Schema Registry UI  | <http://integrationplatform:8002>
 
 
