@@ -304,13 +304,13 @@ Now let's download the latest release from [GitHub](https://github.com/fmtn/a) p
 wget https://github.com/fmtn/a/releases/download/v1.4.8/a-1.4.8-dist.tar.gz
 ```
 
-Then unpack it using the followin command
+Then unpack it using the following command
 
 ```
 tar xvf a-1.4.8-dist.tar.gz
 ```
 
-Remove the files which are not needed (asuming we are on Linux). On windows, leave the a.bat and remove the a file instead). 
+Remove the files which are not needed (assuming we are on Linux). On windows, leave the `a.bat` and remove the a file instead). 
 
 ```
 rm a-1.4.8-dist.tar.gz LICENSE README.md a.bat
@@ -467,3 +467,36 @@ A defaults to ActiveMQ default protocol, OpenWire. You can also use AMQP 1.0. In
 ```
 a -A -b "amqp://guest:guest@localhost:5672" -p "foobar" aqmp-queue
 ```
+
+## Running Simulator to send truck position messages to ActiveMQ
+
+For simulating truck data, we are going to use a Java program (adapted from Hortonworks) and maintained in the Trivadis GitHub [here](https://github.com/TrivadisPF/various-bigdata-prototypes/tree/master/streaming-sources/iot-truck-simulator/impl). It can be started either using Maven or Docker. We will be using it as a Docker container. 
+
+The simulator can produce data either to a **Kafka**, **MQTT** or **JMS** (ActiveMQ). We will use the **JMS** option here to send messages to the ActiveMQ broker. 
+
+Producing truck events to the JMS broker on port 61616 is as simple as running the `trivadis/iot-truck-simulator` docker image.
+
+```
+docker run --rm trivadis/iot-truck-simulator '-s' 'JMS' '-h' $DOCKER_HOST_IP '-p' '61616' '-f' 'CSV'
+```
+
+As soon as messages are produced to ActiveMQ, you should see them either in the ActiveMQ UI or by starting a consumer using the `a` tool. 
+
+```
+a -g -j -c 0 -w 0  test.queue.truck_position
+```
+
+We can slow down the consumer to a very slow rate to better see the messages when produced by using the `-d` flag to specify a delay in milliseconds together with the `-fs` parameter to specify the fleet size. 
+
+```
+docker run --rm trivadis/iot-truck-simulator '-s' 'JMS' '-h' $DOCKER_HOST_IP '-p' '61616' '-f' 'CSV' '-d' '6000' '-fs' '25'  
+```
+
+Currently the simulator only supports Queues in ActiveMQ. Therefore starting an another consumer in a new terminal window
+
+```
+a -g -j -c 0 -w 0  test.queue.truck_position
+```
+
+will start a competing consumer to the first one. You should see a message only in either one or the other window. 
+
