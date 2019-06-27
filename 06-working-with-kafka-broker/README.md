@@ -3,14 +3,23 @@ In this workshop we will learn the basics of working with Apache Kafka. Make sur
 
 The main units of interest in Kafka are topics and messages. A topic is simply what you publish a message to, topics are a stream of messages.
 
-In this workshop you will learn how to create topics, how to produce messsages, how to consume messages and how to descibe/view metadata in Apache Kafka. 
+In this workshop you will learn how to create topics, how to produce messages, how to consume messages and how to describe/view metadata in Apache Kafka. 
+
+## Adding the necessary services to the environment
+
+Our integration platform does not yet contain a message broker.
+
+Create a file `docker-compose.override.yml` in the `docker` folder (the same place where the `docker-compose.yml` is) and add the version and services header:
+
+```
+version: "2.1"
+
+services:
+```
+
+Now, let's add the additional services for Zookeeper and Kafka to the **Integration Platform**. 
+The following definition has to be added to the `docker-compose.override.yml` file. 
     
-## Adding Apache Kafka to the Integration Platform
-
-Our integration platform does not yet contain a Kafka message broker.A Zookeeper node is already up and running and we will reuse it. 
-
-So let's add a new service to the `docker-compose.yml` file we have created in [Setup of the Integration Platform](../01-environment/README.md).
-
 ```
   zookeeper-1:
     image: confluentinc/cp-zookeeper:5.2.1
@@ -123,6 +132,7 @@ So let's add a new service to the `docker-compose.yml` file we have created in [
       ZK_HOSTS: 'zookeeper-1:2181'
       APPLICATION_SECRET: 'letmein'
     restart: always
+    
   kafkahq:
     image: tchiotludo/kafkahq
     container_name: kafkahq
@@ -162,20 +172,14 @@ Now let's start all these new service by executing `docker-compose up` once more
 docker-compose up -d	
 ```
 
-With Docker Compose, you can easily later add some new services, even if the platform is currently running. If you redo a `docker-compose up -d`, Docker Compose will check if there is a delta between what is currently running and what the `docker-compose.yml` file tells. 
-
-If there is a new service added, such as here with `broker-1`, Docker Compose will start the service, leaving the other, already running services untouched. 
-
-If you change configuration on an already running service, then Docker will recreate that service applying the new settings. 
-
-However, removing a service from the `docker-compose.yml` will not cause a running service to be stopped and removed. You have to do that manually using `docker stop <container-name>` to stop it followed by `docker rm <container-name>` to remove the container.
-
 ## Working with built-in Command Line Utilities 
 
-### Connect to a Kafka Broker 
 The environment contains of a Kafka cluster with 3 brokers, all running on the Docker host of course. So it's of course not meant to really fault-tolerant but to demonstrate how to work with a Kafka cluster. 
 
-To work with Kafka you need the command line utilities. They are available on each broker. 
+### Connect to a Kafka Broker 
+
+To work with Kafka you often need access to the command line utilities. They are available on each broker. As an alternative, you can also use Web-based GUIs to manage and administer Apache Kafka. 
+
 The `kafka-topics` utility is used to create, alter, describe, and delete topics. The `kafka-console-producer` and `kafka-console-consumer` can be used to produce/consume messages to/from a Kafka topic. 
 
 So let's connect into one of the broker through a terminal window. 
@@ -300,7 +304,7 @@ Option                                   Description
                                            given to allow fail-over.
 ```
 
-### List topics in Kafka
+### List topics on the Kafka Cluster
 
 First, let's list the topics available on a given Kafka Cluster. For that we use the `kafka-topics` utility with the `--list` option. 
 
@@ -308,14 +312,20 @@ First, let's list the topics available on a given Kafka Cluster. For that we use
 kafka-topics --list --zookeeper zookeeper-1:2181
 ```
 
+Instead of connecting into the `broker-1` container and use the command line utilities from there, you can directly specify the command after the container instead of starting a `bash` shell
+
+```
+docker exec -ti broker-1 kafka-topics --list --zookeeper zookeeper-1:2181
+```
+
 We can see that there are some technical topics, `_schemas` being the one, where the Confluent Schema Registry stores its schemas. 
 
 ### Creating a topic in Kafka
 
-Now let's create a new topic. For that we again use the **kafka-topics** utility but this time with the `--create` option. We will create a test topic with 6 partitions and replicated 2 times. The `--if-not-exists` option is handy to avoid errors, if a topic already exists. 
+Now let's create a new topic. For that we again use the `kafka-topics` utility but this time with the `--create` option. We will create a test topic with 6 partitions and replicated 2 times. The `--if-not-exists` option is handy to avoid errors, if a topic already exists. 
 
 ```
-kafka-topics --create \
+docker exec -ti broker-1 kafka-topics --create \
 			--if-not-exists \
 			--zookeeper zookeeper-1:2181 \
 			--topic test-topic \
@@ -335,12 +345,12 @@ kafka-topics --describe --zookeeper zookeeper-1:2181 --topic test-topic
 
 ```
 Topic:test-topic	PartitionCount:6	ReplicationFactor:2	Configs:
-	Topic: test-topic	Partition: 0	Leader: 3	Replicas: 3,2	Isr: 3,2
-	Topic: test-topic	Partition: 1	Leader: 1	Replicas: 1,3	Isr: 1,3
-	Topic: test-topic	Partition: 2	Leader: 2	Replicas: 2,1	Isr: 2,1
-	Topic: test-topic	Partition: 3	Leader: 3	Replicas: 3,1	Isr: 3,1
-	Topic: test-topic	Partition: 4	Leader: 1	Replicas: 1,2	Isr: 1,2
-	Topic: test-topic	Partition: 5	Leader: 2	Replicas: 2,3	Isr: 2,3
+	Topic: test-topic	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2
+	Topic: test-topic	Partition: 1	Leader: 2	Replicas: 2,3	Isr: 2,3
+	Topic: test-topic	Partition: 2	Leader: 3	Replicas: 3,1	Isr: 3,1
+	Topic: test-topic	Partition: 3	Leader: 1	Replicas: 1,3	Isr: 1,3
+	Topic: test-topic	Partition: 4	Leader: 2	Replicas: 2,1	Isr: 2,1
+	Topic: test-topic	Partition: 5	Leader: 3	Replicas: 3,2	Isr: 3,2
 ```
 
 ### Produce and Consume to Kafka topic with command line utility
@@ -350,9 +360,9 @@ Now let's see the topic in use. The most basic way to test it is through the com
 In a new terminal window, first let's run the consumer on the topic `test-topic` we have created before
 
 ```
-kafka-console-consumer --bootstrap-server broker-1:9092,broker-2:9093 \
-                       --topic test-topic
+kafka-console-consumer --bootstrap-server broker-1:9092,broker-2:9093 --topic test-topic
 ```
+
 After it is started, the consumer just waits for newly produced messages. 
 
 In an another terminal, again connect into `broker-1` using a `docker exec` 
@@ -468,9 +478,9 @@ You can run **Kafkacat** as a standalone utility on any **Linux** or **Mac** com
 ### Installing Kafakcat
 
 Officially **Kafkacat** is either supported on **Linux** or **Mac OS-X**. There is no official support for **Windows** yet. There is a Docker image for Kafkacat from Confluent as well.
-We will show how to install it on **Ubunut** and **Mac OS-X**. 
+We will show how to install it on **Ubuntu** and **Mac OS-X**. 
 
-In all the workshops we will assume that **Kafkacat** is installed locally on the Docker Host and that `streamingplatform` alias has been added to `/etc/hosts`. 
+In all the workshops we will assume that **Kafkacat** is installed locally on the Docker Host and that `integrationplatform` alias has been added to `/etc/hosts`. 
 
 #### Ubuntu
 
@@ -658,43 +668,43 @@ Now let's use it to Produce and Consume messages.
 The simplest way to consume a topic is just specifying the broker and the topic. By default all messages from the beginning of the topic will be shown 
 
 ```
-kafkacat -b streamingplatform -t test-topic
+kafkacat -b integrationplatform -t test-topic
 ```
 
 If you want to start at the end of the topic, i.e. only show new messages, add the `-o` option. 
 
 ```
-kafkacat -b streamingplatform -t test-topic -o end
+kafkacat -b integrationplatform -t test-topic -o end
 ```
 
 To show only the last message (one for each partition), set the `-o` option to `-1`. `-2` would show the last 2 messages.
 
 ```
-kafkacat -b streamingplatform -t test-topic -o -1
+kafkacat -b integrationplatform -t test-topic -o -1
 ```
 
 To show only the last message from exactly one partition, add the `-p` option
 
 ```
-kafkacat -b streamingplatform -t test-topic -p1 -o -1
+kafkacat -b integrationplatform -t test-topic -p1 -o -1
 ```
 
 You can use the `-f` option to format the output. Here we show the partition (`%p`) as well as key (`%k`) and value (`%s`):
 
 ```
-kafkacat -b streamingplatform -t test-topic -f 'Part-%p => %k:%s\n'
+kafkacat -b integrationplatform -t test-topic -f 'Part-%p => %k:%s\n'
 ```
 
 If there are keys which are Null, then you can use `-Z` to actually show NULL in the output:
 
 ```
-kafkacat -b streamingplatform -t test-topic -f 'Part-%p => %k:%s\n' -Z
+kafkacat -b integrationplatform -t test-topic -f 'Part-%p => %k:%s\n' -Z
 ```
 
 There is also the option `-J` to have the output emitted as JSON.
 
 ```
-kafkacat -b streamingplatform -t test-topic -J
+kafkacat -b integrationplatform -t test-topic -J
 ```
 
 ### Producing messages using Kafkacat
@@ -702,13 +712,13 @@ kafkacat -b streamingplatform -t test-topic -J
 Producing messages with **Kafkacat** is as easy as consuming. Just add the `-P` option to switch to Producer mode.
 
 ```
-kafkacat -b streamingplatform -t test-topic -P
+kafkacat -b integrationplatform -t test-topic -P
 ```
 
 To produce with key, specify the delimiter to split key and message, using the `-K` option. 
 
 ```
-kafkacat -b streamingplatform -t test-topic -P -K , -X topic.partitioner=murmur2_random
+kafkacat -b integrationplatform -t test-topic -P -K , -X topic.partitioner=murmur2_random
 ```
 
 Find some more example on the [Kafkacat GitHub project](https://github.com/edenhill/kafkacat) or in the [Confluent Documentation](https://docs.confluent.io/current/app-development/kafkacat-usage.html).
@@ -721,12 +731,12 @@ Taking his example, you can send 10 orders to test-topic.
 
 ```
 curl -s "https://api.mockaroo.com/api/d5a195e0?count=20&key=ff7856d0"| \
-	kafkacat -b streamingplatform -t test-topic -P
+	kafkacat -b integrationplatform -t test-topic -P
 ```
 
 ## Using Kafka Manager
 
-[Kafka Manger](https://github.com/yahoo/kafka-manager) is an open source tool created by Yahoo for managing a Kafka cluster. It has been started as part of the **streamingplatform** and can be reached on <http://streamingplatform:29000/>.
+[Kafka Manger](https://github.com/yahoo/kafka-manager) is an open source tool created by Yahoo for managing a Kafka cluster. It has been started as part of the **Integration Plattform** and can be reached on <http://integrationplatform:29000/>.
 
 ![Alt Image Text](./images/kafka-manager-homepage.png "Kafka Manager Homepage")
 
