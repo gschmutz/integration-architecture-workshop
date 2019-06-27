@@ -236,7 +236,7 @@ Data Integration provides a number of deployment options. Running a Transformati
 
 4. The **Execution Results** section of the window contains several different tabs that help you to see how the transformation executed, pinpoint errors, and monitor performance.
 
-  * **Step Metrics** tab provides statistics for each step in your transformation including how many records were read, written, caused an error, processing speed (rows per second) and more.  This tab also indicates whether an error occurred in a transformation step.  We did not intentionally put any errors in this tutorial so it should run correctly.  But, if a mistake had occurred, steps that caused the transformation to fail would be highlighted in red.  In the example below, the Lookup Missing Zips step caused an error.
+  * **Step Metrics** tab provides statistics for each step in your transformation including how many records were read, written, caused an error, processing speed (rows per second) and more. This tab also indicates whether an error occurred in a transformation step.  We did not intentionally put any errors in this tutorial so it should run correctly.  But, if a mistake had occurred, steps that caused the transformation to fail would be highlighted in red.  In the example below, the Lookup Missing Zips step caused an error.
 
 	![Alt Image Text](./images/run-transform-metrics.png "Transform")
 
@@ -248,5 +248,11 @@ Data Integration provides a number of deployment options. Running a Transformati
 
 You can use the graphical UI **Adminer** to connect to PostgreSQL and execute SQL statements. 
 
-1. Navigate to <http://integrationplatform:28081> to open Adminer in a browser window.
-2. 
+1. Navigate to <http://integrationplatform:28081> to open **Adminer** in a browser window.
+2. Enter the connection details as
+   * Select `PostgreSQL` from the list of **System**
+   * Enter `postgresql` into the **Server** field
+   * Enter `orderproc` into both **Username** and **Password** field
+   * Enter `orderproc` into the **Database** field
+   * Click **Login** to log into the PostgreSQL instance
+3. Navigate to the `SALES_DATA` table browse into the data

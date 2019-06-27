@@ -5,10 +5,20 @@ The main units of interest in Apache ActiveMQ are queues, topics and messages.
 
 In this workshop you will learn how to use and work with Queues and Topics and send and consume messages to/from both of them.
 
-## Adding Apache ActiveMQ to the Integration Platform
+## Adding the necessary services to the environment
+
 Our integration platform does not yet contain a message broker.
 
-So let's add a new service to the docker-compose.yml file we have created in [Setup of the Integration Platform](../01-environment/README.md).
+Create a file `docker-compose.override.yml` in the `docker` folder (the same place where the `docker-compose.yml` is) and add the version and services header:
+
+```
+version: "2.1"
+
+services:
+```
+
+Now, let's add the `activemq` and `hawtio` service to the **Integration Platform**. 
+The following definition has to be added to the `docker-compose.override.yml` file. 
 
 ```
   activemq:
@@ -27,8 +37,8 @@ So let's add a new service to the docker-compose.yml file we have created in [Se
       - "61614:61614"
       # jms
       - "61616:61616"
-    volumes:
-      - ./container-volume/activemq/data:/opt/activemq/data
+#    volumes:
+#      - ./container-volume/activemq/data:/opt/activemq/data
     restart: always
  
   hawtio:
@@ -36,10 +46,10 @@ So let's add a new service to the docker-compose.yml file we have created in [Se
     container_name: hawtio
     hostname: hawtio
     ports:
-      - "8090:8090" 
+      - "38085:8080" 
 ```
 
-The service will map the data folder to a folder on the docker host. Therefore we have to create it below the container_data created in the setup and give it the necessary access privileges.
+The service can map the data folder to a folder on the docker host. If you want that, you need to uncomment the volume mapping above, to use the `container-volume/activemq/data` folder to store the Active MQ data. You will have to create it once and give the necessary privileges, before you can start it.
 
 ```
 cd integrationplatform
@@ -47,23 +57,15 @@ mkdir -p container-volume/activemq/data
 chmod 777 -R container_data
 ```
 	
-Now let's start that sevice by executing `docker-compose up` once more. 
+Now let's start that services by executing `docker-compose up` once more. 
 
 ```
 docker-compose up -d	
 ```
 
-With Docker Compose, you can easily later add some new services, even if the platform is currently running. If you redo a `docker-compose up -d`, Docker Compose will check if there is a delta between what is currently running and what the `docker-compose.yml` file tells. 
-
-If there is a new service added, such as here with Mosquitto, Docker Compose will start the service, leaving the other, already running services untouched. 
-
-If you change configuration on an already running service, then Docker will recreate that service applying the new settings. 
-
-However, removing a service from the `docker-compose.yml` will not cause a running service to be stopped and removed. You have to do that manually. 
-
 ## Testing Broker with built-in Command Line Utility
 
-ActveMQ contains a built-in utiliity which can be used to easily test sending and consuming from a queue in ActiveMQ. The utility uses a queue with a fixed name `TEST`.
+ActiveMQ comes with a built-in utility which can be used to easily test sending and consuming from a queue in ActiveMQ. The utility uses a queue with a fixed name `TEST`.
 
 ### Connecting to a ActiveMQ Broker 
 
@@ -71,25 +73,26 @@ To connect to the ActiveMQ broker we have started above, open a new terminal win
 In that window, execute a `docker exec` command to run a shell in the `activemq` docker container.
 
 ```
-docker exec -ti integrationplatform_activemq_1 bash
+docker exec -ti activemq bash
 ```
 
-Now we are connected to bash shell in the running ActiveMQ container. This is similar to an SSH connect to a remote machine, but SSH is not easily done in a containerized environment, as both the credentials as well as the IP address of the container are easily known. You can ask for the IP address of a running container, but it will not be static over multiple runs. Using the `docker exec` command simplifies that a lot.
+Now we are connected to bash shell inside the `activemq` container. This is similar to an SSH connect to a remote machine, but SSH cannot be used in a containerised environment, as both the credentials as well as the IP address of the container are not known. Using the `docker exec` command is the command you should use instead of `ssh`.
+
+### Using the ActiveMQ CLI utility
 
 Navigate to the ActiveMQ installation and into the `/bin` folder. 
 
 ```
 cd /opt/activemq/bin
 ```
-### Using the activemq CLI utility
 
-Here we can find the `activemq` CLI utility. If you just enter `activemq` without any parameter, the help page will be show. 
+Here we find the `activemq` CLI utility. If you just enter `activemq` without any parameter, the help page will be show. 
 
 ```
 ./activemq
 ```
 
-This is the output you should get:
+You should see an output similar to that
 
 ```
 INFO: Loading '/opt/activemq/bin/env'
@@ -155,7 +158,8 @@ Configuration of this script:
 Now let's use this utility to produce some messages to a queue.
 
 ### Producing messages
-Messages can be easliy produced by using the producer option, as shown here. 
+
+Messages can be easily produced by using the producer option, as shown here. 
 
 ```
 ./activemq producer
@@ -167,13 +171,13 @@ In the next step, let's consume the messages we have produced.
 
 ### Consuming messages
 
-Messages from the `TEST` queue can easily be consumed using the `consumer` option of the `activemq` CLI utlity.
+Messages from the `TEST` queue can easily be consumed using the `consumer` option of the `activemq` CLI utility.
 
 ```
 ./activemq consumer
 ```
 
-you should get an output similar to the one shown below, showing the 1000 messages consumed from the queue. 
+You should get an output similar to the one shown below, showing the 1000 messages consumed from the queue. 
 
 ```
 INFO: Loading '/opt/activemq/bin/env'
@@ -214,11 +218,11 @@ After that the consumer will stop. If you rerun the consumer, then it will be bl
 In a new terminal window, connect to the broker 
 
 ```
-docker exec -ti integrationplatform-activemq_1 bash
+docker exec -ti activemq bash
 cd /opt/activemq/bin
 ``` 
 
-and execute the producer a second time.
+Execute the producer a second time.
 
 ``` 
 activemq producer
@@ -230,7 +234,7 @@ As soon as it is running, you should see messages appearing on the consumer.
 
 ### Browsing messages
 
-You can also use the activemq utility to browse for messages. This will show all messages, which have not yet been conumed. 
+You can also use the **ActiveMQ** utility to browse for messages. This will show all messages, which have not yet been consumed. 
 
 ``` 
 ./activemq browse --amqurl tcp://localhost:61616 TEST
@@ -238,35 +242,33 @@ You can also use the activemq utility to browse for messages. This will show all
 
 ## Using the ActiveMQ Web Console
 
-The [ActiveMQ Web Console](http://activemq.apache.org/web-console.html) is a web based administration tool for working with ActiveMQ. When used with the JMX support it can be an invaluable tool for working with ActiveMQ. 
+The [ActiveMQ Web Console](http://activemq.apache.org/web-console.html) is a web based Management Web GUI for working with ActiveMQ. When used with the JMX support it can be a very valuable tool for working with ActiveMQ. 
 
-The ActiveMQ Web Console is included in the binary option of ActiveMQ and threfore also available inside the docker container. In a browser, navigate to the following URL (assuming that you have added `integrationplatform` to your `/etc/hosts` file). 
+The ActiveMQ Web Console is included in the binary option of **ActiveMQ** and therefore also available inside the docker container. In a browser, navigate to <http://integrationplatform:8161/admin/>.
 
-<http://integrationplatform:8161/admin/>
+Enter `admin` into the **User Name** field and `admin` into the **Password** field and click **OK**. 
 
-Enter **admin** into the **User Name** field and **admin** into the **Password** field and click **OK**. 
 You should see the Web Console running:
 
-![Alt Image Text](./images/activemq-webconsole-overview.png "Schema Registry UI")
+![Alt Image Text](./images/activemq-webconsole-overview.png "Active MQ Web Console")
 
 Click on the **Queues** link in the menu on top. 
 
-![Alt Image Text](./images/activemq-webconsole-queues.png "Schema Registry UI")
+![Alt Image Text](./images/activemq-webconsole-queues.png "Active MQ Web Console")
 
 You can use the Web Console to produce messages, as well as purge and delete topics. You can also copy/move single messages. 
 
 With the third party console, Hawt.IO presented below, you can do a bit more - such as bulk operations.
 
-## Using the Hawt.io Web Console with ActiveMQ
-[Hawtio](http://hawt.io/) is a modular web console for managing your Java stuff.
+## Using the Hawtio Web Console with ActiveMQ
 
-In a Web browser navigate to the following URL:
+[Hawtio](http://hawt.io/) is a modular web console for managing Java infrastructures.
 
-<http://integrationplatform:8090/hawtio/>
+In a Web browser navigate to <http://integrationplatform:8090/hawtio/>.
 
-You should see the Hawtio Web Console running:
+You should see the Hawtio Web Console running
 
-![Alt Image Text](./images/hawtio-webconsole-overview.png "Schema Registry UI")
+![Alt Image Text](./images/hawtio-webconsole-overview.png "Hawtio Web Console UI")
 
 Let's connect to the ActiveMQ broker. In the **Connection Settings**, enter **ActiveMQ** into the **Name** field, **activemq** into the **Host** field, change the **Port** field to **8161** and enter **api/jolokia** into the **Path** field. Then click on **Connect to remote server**.
 
@@ -274,17 +276,18 @@ The ActiveMQ dashboard will be shown.
 
 ![Alt Image Text](./images/hawtio-activemq-overview.png "Schema Registry UI")
 
-On the right side you can navigate to the **Queue**s and **Topic**s available on the broker. On the right side you can see metrics for the queue.
+On the right side you can navigate to the **Queue**s and **Topic**s available on the broker. 
+On the right side you can see metrics for the queue.
 
 Click on **Browse** to see the messages currently in the queue waiting for consumption.
 
 ![Alt Image Text](./images/hawtio-activemq-queue-browse.png "Schema Registry UI")
 
-Navigate and familiarize yourself with the possibilities of Hawtio. 
+Navigate and familiarise yourself with the possibilities of Hawtio. 
 
 ## Using the "A" command line utility
 
-Both the console as well as Hawt.io do not behave like a real client. You can't simulate a client subscribing to a topic. The [ActiveMQ CLI testing and message management](https://github.com/fmtn/a) utility, implemented by Peter Nordlander and available on his GitHub account, simplifies testing and message management quite a bit. It is a command line utility and also known as the "a" command. 
+Both the console as well as Hawtio do not behave like a real client. You can't simulate a client subscribing to a topic. The [ActiveMQ CLI testing and message management](https://github.com/fmtn/a) utility, implemented by Peter Nordlander and available on his GitHub account, simplifies testing and message management quite a bit. It is a command line utility and also known as the "a" command. 
 
 ### Installing the "A" utility
 
@@ -297,25 +300,24 @@ cd ~/bin
 
 Now let's download the latest release from [GitHub](https://github.com/fmtn/a) project.
 
-
 ```
-wget https://github.com/fmtn/a/releases/download/v1.4.6/a-1.4.6-dist.tar.gz
+wget https://github.com/fmtn/a/releases/download/v1.4.8/a-1.4.8-dist.tar.gz
 ```
 
 Then unpack it using the followin command
 
 ```
-tar xvf a-1.4.6-dist.tar.gz
+tar xvf a-1.4.8-dist.tar.gz
 ```
 
 Remove the files which are not needed (asuming we are on Linux). On windows, leave the a.bat and remove the a file instead). 
 
 ```
-rm a-1.4.6-dist.tar.gz LICENSE README.md a.bat
+rm a-1.4.8-dist.tar.gz LICENSE README.md a.bat
 chmod +x a
 ```
 
-Now the "A" script should be available. Enter a without any parameter to get the usage page with an overview of the various options.
+Now the `a` script should be available. Enter a without any parameter to get the usage page with an overview of the various options.
 
 ```
 ~/bin> a
@@ -405,55 +407,56 @@ usage: java -jar a-<version>-with-dependencies.jar [-A] [-a] [-B
 
 ### A in "Action"
 
-To put message with payload "foobar" to queue ow-queue on local broker
+To put message with payload `foobar` to queue `ow-queue` on the local broker
 
 ```
 a -p "foobar" ow-queue
 ```
 
-Put message with payload of file foo.bar to queue ow-queue on local broker, also set a property
+Put message with payload of file `foo.bar` to queue `ow-queue` on local broker, also set a property
 
 ```
 a -p "@foo.bar" -Hfoo=bar ow-queue
 ```
 
-Browse five messages from queue ow-queue.
+Browse five messages from queue `ow-queue`
 
 ```
 a -c 5 ow-queue
 ```
 
-Get message from queue and show JMS headers
+Get message from the `ow-queue` and show JMS headers
 
 ```
 a -g -j ow-queue
 ```
 
-Put 100 messages to queue ow-queue (for load test etc)
+Put 100 messages to queue `ow-queue` (for load test etc)
 
 ```
 a -p "foobar" -c 100 ow-queue
 ```
 
-Put file foo.bar as a byte message on queue ow-queue
+Put file `foo.bar` as a byte message on queue `ow-queue`
 
 ```
 a -p "@foo.bar" -t bytes ow-queue
 ```
 
-Read all XML files in a folder input an put them on queue ow-queue. Files are deleted afterwards.
-
+Read all XML files in a folder input and put them on queue `ow-queue`
 ```
 a -R "input/*.xml" ow-queue
 ```
 
-Put file foo.json as map message on queue ow-queue
+Files are deleted afterwards.
+
+Put file `foo.json` as map message on queue `ow-queue`
 
 ```
 a -p "@foo.json" -t map ow-queue
 ```
 
-Put a map message on a queue using json as the format of the payload
+Put a map message on the queue `ow-queue` using JSON as the format of the payload
 
 ```
 a -p "{\"a\":\"a message tool\"}" -t map ow-queue
