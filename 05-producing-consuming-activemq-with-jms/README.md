@@ -1,9 +1,9 @@
 # Producing and Consuming AciveMQ using Java Message Service (JMS)
 In this workshop we will learn how to use the [Java Message Service (JMS) API](https://en.wikipedia.org/wiki/Java_Message_Service).
 
-JMS is a Java API and therefore only available from the Java Virtual Machine. So you need to use a language based on the JVM, such as of course Java. We will be using some sample Java classes to see how wokring with Queues and Topics over JMS works. 
+JMS is a Java API and therefore only available from the Java Virtual Machine. So you need to use a language based on the JVM, such as of course Java. We will be using some sample Java classes to see how working with Queues and Topics over JMS works. 
 
-We will first see how it is to work with Java messaging using plain JMS. Then we will be using the Spring Framwork and see how it can simplify working with JMS by quite a bit. 
+We will first see how it is to work with Java messaging using plain JMS. Then we will be using the Spring Framework and see how it can simplify working with JMS by quite a bit. 
 
 Start the Eclipse IDE if not yet done. 
 
@@ -34,7 +34,7 @@ First let's add the dependencies for the project. Copy the following block right
 
 ```
    <properties>
-        <activemq-version>5.7.0</activemq-version>
+       <activemq-version>5.7.0</activemq-version>
 		<slf4j-version>1.6.6</slf4j-version>
     </properties>
 
@@ -59,7 +59,7 @@ First let's add the dependencies for the project. Copy the following block right
 
 ### Writing a Producer
 
-First create a new Java Package `org.apache.activemq.simple.queue` in the folder **src/main/java**.
+First, create a new Java Package `org.apache.activemq.simple.queue` in the folder **src/main/java**.
 
 Create a new Java Class `SimpleProducer` in the package `org.apache.activemq.simple.queue` just created. 
 
@@ -205,7 +205,7 @@ queue.queue/simple = test.queue.simple
 
 This will tell the program where to find the ActiveMQ broker as well as which Queue to use. 
 
-### Runing the Producer
+### Running the Producer
 
 In order to run the Producer class from the command line, we need to create a Maven profile. Add the following lines to the `pom.xml`, just before the ending `</project>` tag.
 
@@ -327,7 +327,8 @@ public class SimpleConsumer {
 }
 ``` 
 
-### Runing the Consumer
+### Running the Consumer
+
 In order to run the Consumer class from the command line, we need to create another Maven profile. Add the following lines to the `pom.xml`, just before the ending `</profiles>` tag.
 
 ```
@@ -362,7 +363,7 @@ In a terminal window, navigate to the project folder and enter
 mvn package
 ``` 
 
-to compile the project. If it is successful, you can then run the producer using
+To compile the project. If it is successful, you can then run the producer using
 
 ``` 
 mvn -P consumer
@@ -570,7 +571,7 @@ topic.topic/control = test.topic.control
 
 This will tell the program where to find the ActiveMQ broker as well as which Topic to use. 
 
-### Runing the Publisher
+### Running the Publisher
 
 In order to run the Producer class from the command line, we need to create a Maven profile. Add the following lines to the `pom.xml`, just before the ending `</project>` tag.
 
@@ -758,7 +759,7 @@ public class SimpleSubscriber {
 
 ``` 
 
-### Runing the Subscriber
+### Running the Subscriber
 In order to run the Consumer class from the command line, we need to create another Maven profile. Add the following lines to the `pom.xml`, just before the ending `</profiles>` tag.
 
 ```
@@ -808,16 +809,3 @@ Run the publisher again in a new terminal window.
 mvn -P publisher
 ``` 
 
-
-## Spring Boot
-
-t.b.d.
-
-```
-<OrderTransaction>
-  <id>1</id>
-  <from>you</from>
-  <to>me</to>
-  <amount>200</amount>
-</OrderTransaction>
-```
