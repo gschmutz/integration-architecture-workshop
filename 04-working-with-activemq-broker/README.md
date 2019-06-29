@@ -51,10 +51,10 @@ The following definition has to be added to the `docker-compose.override.yml` fi
 
 By default the ActiveMQ stores its data (the messages you persist) inside the docker container. This has the effect that you lose the data, should you stop and remove the container. 
 
-If you don't want that, then you have to map a volume from the Docker Host to the folder inside the container, where ActiveMQ stored its data. For that you have to uncomment the volume mapping in the `activemq` service definition. By that the the `container-volume/activemq/data` folder is used to store the Active MQ data. You will have to create that folder once and give the necessary privileges, before you can start using it.
+If you don't want that, then you have to map a volume from the Docker Host to the folder inside the container, where ActiveMQ stored its data. For that you have to uncomment the volume mapping in the `activemq` service definition. By that the `container-volume/activemq/data` folder is used to store the Active MQ data. You will have to create that folder inside the `docker/of container-volume` folder and give it the necessary privileges, before you can start using it.
 
 ```
-cd integrationplatform
+cd integration-architecture-workshop/01-environment/docker
 mkdir -p container-volume/activemq/data
 chmod 777 -R container_data
 ```
