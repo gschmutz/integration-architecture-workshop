@@ -49,7 +49,9 @@ The following definition has to be added to the `docker-compose.override.yml` fi
       - "38085:8080"  
 ```
 
-The service can map the data folder to a folder on the docker host. If you want that, you need to uncomment the volume mapping above, to use the `container-volume/activemq/data` folder to store the Active MQ data. You will have to create it once and give the necessary privileges, before you can start it.
+By default the ActiveMQ stores its data (the messages you persist) inside the docker container. This has the effect that you lose the data, should you stop and remove the container. 
+
+If you don't want that, then you have to map a volume from the Docker Host to the folder inside the container, where ActiveMQ stored its data. For that you have to uncomment the volume mapping in the `activemq` service definition. By that the the `container-volume/activemq/data` folder is used to store the Active MQ data. You will have to create that folder once and give the necessary privileges, before you can start using it.
 
 ```
 cd integrationplatform
