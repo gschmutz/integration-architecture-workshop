@@ -56,7 +56,7 @@ If you don't want that, then you have to map a volume from the Docker Host to th
 ```
 cd integration-architecture-workshop/01-environment/docker
 mkdir -p container-volume/activemq/data
-chmod 777 -R container_data
+chmod 777 -R container-volume
 ```
 	
 Now let's start that services by executing `docker-compose up` once more. 
