@@ -42,11 +42,11 @@ The following definition has to be added to the `docker-compose.override.yml` fi
     restart: always
  
   hawtio:
-    image: "indigo/hawtio"
+    image: "erikwramner/hawtio"
     container_name: hawtio
     hostname: hawtio
     ports:
-      - "38085:8080" 
+      - "38085:8080"  
 ```
 
 The service can map the data folder to a folder on the docker host. If you want that, you need to uncomment the volume mapping above, to use the `container-volume/activemq/data` folder to store the Active MQ data. You will have to create it once and give the necessary privileges, before you can start it.
