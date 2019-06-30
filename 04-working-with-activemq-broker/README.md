@@ -227,7 +227,7 @@ cd /opt/activemq/bin
 Execute the producer a second time.
 
 ``` 
-activemq producer
+./activemq producer
 ``` 
 
 As soon as it is running, you should see messages appearing on the consumer.
@@ -266,13 +266,15 @@ With the third party console, Hawt.IO presented below, you can do a bit more - s
 
 [Hawtio](http://hawt.io/) is a modular web console for managing Java infrastructures.
 
-In a Web browser navigate to <http://integrationplatform:8090/hawtio/>.
+In a Web browser navigate to <http://integrationplatform:38085/hawtio/>.
 
-You should see the Hawtio Web Console running
+You should see the **Hawtio Web Console** home page
 
 ![Alt Image Text](./images/hawtio-webconsole-overview.png "Hawtio Web Console UI")
 
-Let's connect to the ActiveMQ broker. In the **Connection Settings**, enter **ActiveMQ** into the **Name** field, **activemq** into the **Host** field, change the **Port** field to **8161** and enter **api/jolokia** into the **Path** field. Then click on **Connect to remote server**.
+Let's connect to the ActiveMQ broker. 
+
+Under **Connection Settings**, enter `ActiveMQ` into the **Name** field, `activemq` into the **Host** field, change the **Port** field to `8161` and enter `api/jolokia` into the **Path** field. Now click on **Connect to remote server** to connect to the ActiveMQ instance.
 
 The ActiveMQ dashboard will be shown.
 
