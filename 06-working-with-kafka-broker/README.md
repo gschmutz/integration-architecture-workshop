@@ -774,8 +774,9 @@ Click on **Go to cluster view**.
 
 ## Using Conduktor
 
-A very new tool still being under active development is [Conduktor](http://www.conduktor.io).
-It's a Client application and available for Mac OS X, Windows and Linux.
+A very new tool still being under active development is [Conduktor](http://www.conduktor.io). During the beta phase, it's free to use it, later there might be a paid version offering some more enterprise-like features. 
+
+Conduktor is a Client application and can be installed on Mac OS X, Windows and Linux.
 
 After installing and starting it you should see the home screen of Conduktor.
 
