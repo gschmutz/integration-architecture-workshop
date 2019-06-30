@@ -268,13 +268,15 @@ With the third party console, Hawt.IO presented below, you can do a bit more - s
 
 In a Web browser navigate to <http://integrationplatform:38085/hawtio/>.
 
-You should see the **Hawtio Web Console** home page
+You should see the **Welcome to hawtio** page. Click on **Do not show welcome page on startup** to get to the **Connection** page, as shown below. 
 
 ![Alt Image Text](./images/hawtio-webconsole-overview.png "Hawtio Web Console UI")
 
 Let's connect to the ActiveMQ broker. 
 
-Under **Connection Settings**, enter `ActiveMQ` into the **Name** field, `activemq` into the **Host** field, change the **Port** field to `8161` and enter `api/jolokia` into the **Path** field. Now click on **Connect to remote server** to connect to the ActiveMQ instance.
+Under **Connection Settings**, enter `ActiveMQ` into the **Name** field, `activemq` into the **Host** field, change the **Port** field to `8161` and enter `api/jolokia` into the **Path** field. 
+
+Now click on **Connect to remote server** to connect to the ActiveMQ instance. On the **Sign in** popup window, enter `admin` into the **Username** field and `admin` into the **Password** field and click **Sign In**. 
 
 The ActiveMQ dashboard will be shown.
 
