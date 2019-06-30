@@ -2,37 +2,109 @@
 
 In this workshop we will learn how to use the [Apache Camel](https://camel.apache.org) Integration Framework. 
 
-We will see how Apache Camel can help in integration different applications/systems in a very lightweight manner. 
+We will see how Apache Camel can help in integrating different applications/systems in a very lightweight manner. 
 
-Start the Eclipse IDE if not yet done. 
+## Adding the necessary services to the environment
 
-### Create the project and the project definition (pom.xml)
+For this workshop we will use the `ftp` service which is already part of the base platform and `activemq` & `hawtio`, which have to be added to the `docker-compose.override.yml` file, if it does not already exist from the ActiveMQ workshop. 
 
-Create a new [Maven project](../99-misc/97-working-with-eclipse/README.md) and in the last step use `com.trivadis.integration.ws` for the **Group Id** and `working-with-camel` for the **Artifact Id**.
+```
+  activemq:
+    image: rmohr/activemq
+    container_name: activemq
+    ports:
+      # mqtt
+      - "1883:1883"
+      # amqp
+      - "5672:5672"
+      # ui
+      - "8161:8161"
+      # stomp
+      - "61613:61613"
+      # ws
+      - "61614:61614"
+      # jms
+      - "61616:61616"
+#    volumes:
+#      - ./container-volume/activemq/data:/opt/activemq/data
+    restart: always
+ 
+  hawtio:
+    image: "erikwramner/hawtio"
+    container_name: hawtio
+    hostname: hawtio
+    ports:
+      - "38085:8080"
+```
 
-Navigate to the **pom.xml** and double-click on it. The POM Editor will be displayed. 
+Additionally we also need a Java IDE to create some, rather simple Java classes, which act as the orchestrator for our Apache Camel flows. In this workshop we will use the Eclipse IDE, but you can also use your own, preferred IDE, if you have some previous experience with Java. 
 
-You can either use the GUI to edit your pom.xml or click on the last tab **pom.xml** to switch to the "code view". Let's do that. 
+Unfortunately Eclipse cannot be provisioned using Docker. You either have to install it on your local machine or use the one provided with the Virtual Machine. 
+
+### Starting Eclipse IDE of Virtual Machine
+
+Inside the Virtual Machine, Eclipse is available in the folder `/home/bigdata/eclipse/jee-2018-09/eclipse`. 
+
+```
+cd /home/bigdata/eclipse/jee-2018-09/eclipse
+./eclipse
+```
+
+Skip the next section and continue with **Using Eclipse IDE**
+
+### Download and Install Eclipse IDE to your local machine
+
+Navigate to <https://www.eclipse.org/downloads/> and download the **Eclipse IDE 2019-06** package. Install it to either your Windows, Mac or Linux environment. 
+
+On installing Eclipse IDE you will get asked for the flavour of Eclipse you want to install. Select **Eclipse IDE for Java Developers** when asked and click **Install**. Accept the **Eclipse Foundation Software User Agreement** by clicking on **Accept Now**. During installation you might again be asked to accept license terms. Select **Remember accepted licenses** and click **ACCEPT**. 
+
+Once installed, click on the Eclipse IDE icon and follow with the next section
+
+### Using Eclipse IDE
+
+After starting Eclipse through either the command line or by clicking on the icon, you should  get the **Eclipse IDE Launcher** similar to the screenshot below
+
+![Alt Image Text](./images/eclipse-ide-launcher.png "Eclipse IDE Launcher")
+
+Change the **Workspace** folder according to your needs and click **Launch**.
+
+After while, you should see the **Eclipse IDE Home** similar to the screenshot below
+
+![Alt Image Text](./images/eclipse-ide-home.png "Eclipse IDE Home")
+
+Click on the **Workbench** Icon in the top right corner to navigate to the **Eclipse IDE** view. 
+
+![Alt Image Text](./images/eclipse-ide-view.png "Eclipse IDE View")
+
+This is the view you will use to work with Java artefacts.
+
+## Create a new Java/Maven project and configure it (pom.xml)
+
+Create a new [Maven project](../99-misc/97-working-with-eclipse/README.md) and in the last step use `com.integration.ws` for the **Group Id** and `working-with-camel` for the **Artifact Id**. Leave the **Version** and **Packaging** as is and click **Finish**.
+
+Navigate into the `working-with-camel` project by expanding the tree on the left and double-click on the **pom.xml**. This will open the POM Editor in the middle of the IDE. 
+
+You can either use the GUI editor to change the `pom.xml` or click on the last tab **pom.xml** to switch to the "code view". Let's do that. 
 
 You will see the still rather empty definition.
 
 ```
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.trivadis.integrationws</groupId>
+  <groupId>com.integrationws</groupId>
   <artifactId>working-with-camel</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 </project>
 ```
 
-Let's add some initial dependencies for our project. We will add some more depencencies to the POM throughout this workshop.. 
+Let's add some initial dependencies for the project. Dependencies in Maven are links to external Java projects needed to build an application. Instead of manually downloading and provisioning these libraries, we only have to provide the exact name and version and Maven will do the downloading for us. 
 
 Copy the following block right after the <version> tag, before the closing </project> tag.
 
 ```
    <properties>
 		<activemq-version>5.15.4</activemq-version>
-		<camel-version>2.21.1</camel-version>
+		<camel-version>2.24.1</camel-version>
 		<spring-version>4.1.7.RELEASE</spring-version>
 		<slf4j-version>1.7.5</slf4j-version>
 
@@ -92,11 +164,9 @@ Copy the following block right after the <version> tag, before the closing </pro
 	</build>    
 ```
 
-In a terminal window, perform the following command to update the Eclipse IDE project settings. 
+We will add some more dependencies to the POM throughout this workshop.
 
-```
-mvn eclipse:eclipse
-```
+Saving the `pom.xml` will refresh the Eclipse project settings and download the necessary artefacts from the maven repository.
 
 Refresh the project in Eclipse to re-read the project settings.
 
@@ -151,24 +221,26 @@ log4j.appender.out.layout.ConversionPattern=[%30.30t] %-30.30c{1} %-5p %m%n
 log4j.throwableRenderer=org.apache.log4j.EnhancedThrowableRenderer
 ```
 
-This finishes the setup steps and our new project is ready to be used. We will start with a simple Camel flow. 
+This finishes the **setup steps** and our new project is ready to be used. We will start with a simple flow using **Apache Camel**. 
 
-## Create simple Camel flow using the File component
+## Create simple Apache Camel flow using the File component
 
-Let's start with a simple File-based data flow. We will be reading files from a local folder and store it again in another local folder. We will see how this can be done using the Spring DSL as well as the Java DSL of Apache Camel. 
+Let's start with a simple File-based data flow. 
 
-We will first implement a class using the Java DSL
+We will be **reading files** from a **local folder** and **store it** in another **local folder**. We will show it both using the Spring DSL as well as the Java DSL of Apache Camel. 
+
+First let's implement it using the Java DSL
 
 ### Using the Java DSL
 
-First create a new Java Package `com.trivadis.integrationws.camel` in the folder **src/main/java**.
+First create a new Java Package `com.integrationws.camel` in the folder **src/main/java**.
 
-Create a new Java Class `FileCopierJava` in the package `com.trivadis.integrationws.camel` just created. 
+Create a new Java Class `FileCopierJava` in the package `com.integrationws.camel` just created. 
 
 Add the following code to the empty class. 
 
 ``` 
-package com.trivadis.integrationws.camel;
+package com.integrationws.camel;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.main.Main;
@@ -193,19 +265,19 @@ public class FileCopierJava {
 }
 ``` 
 
-We can see that the Java DSL is used inside a public static main method. We can just start the class as a Java application in order to test it. 
+We can see that the Java DSL is used inside a public static main method. It uses the `from()` to specify from where to read and the `to()` to specify where to write the messages to. 
 
-Now Right click on the class in the **Package Explorer** and select **Run As** | **Java Application**.
+Right click on the class in the **Package Explorer** and select **Run As** | **Java Application** to start and run our first Apache Camel application. 
 
 ![Alt Image Text](./images/eclipse-javadsl-run-as-java-app.png "Edit Pom.xml")
 
-The Java application will start the Camel route and the you should see in the console output window that the [File](http://camel.apache.org/file2.html) component is starting to poll from the `data/inbox` folder. 
+The Java application will start the Camel route and the you should see in the console output window that the [File](http://camel.apache.org/file2.html) component is starting to poll from the `data/inbox` folder.
 
 ```
 [el Thread #1 - LRUCacheFactory] LRUCacheFactory                DEBUG Warming up LRUCache ...
 [el Thread #1 - LRUCacheFactory] LRUCacheFactory                DEBUG Warming up LRUCache complete in 603 millis
 [                          main] DefaultCamelContext            DEBUG Adding routes from builder: Routes: []
-[                          main] DefaultCamelContext            INFO  Apache Camel 2.21.1 (CamelContext: camel-1) is starting
+[                          main] DefaultCamelContext            INFO  Apache Camel 2.24.1 (CamelContext: camel-1) is starting
 [                          main] DefaultCamelContext            DEBUG Using ClassResolver=org.apache.camel.impl.DefaultClassResolver@66a3ffec, PackageScanClassResolver=org.apache.camel.impl.DefaultPackageScanClassResolver@77caeb3e, ApplicationContextClassLoader=null, RouteController=org.apache.camel.impl.DefaultRouteController@1e88b3c
 [                          main] ManagedManagementStrategy      INFO  JMX is enabled
 [                          main] DefaultManagementAgent         DEBUG Starting JMX agent on server: com.sun.jmx.mbeanserver.JmxMBeanServer@39c0f4a
@@ -278,30 +350,32 @@ The Java application will start the Camel route and the you should see in the co
 [ thread #2 - file://data/inbox] FileConsumer                   DEBUG Took 0.001 seconds to poll: data/inbox
 ```
 
-Copy a file to the `data/inbox` folder and you should see the following output in the console window. 
+The `data/inbox` folder is local to our Java project, so you should find it as a subfolder below the `working-with-camel` folder in the Eclipse workspace.
+
+Copy a file into the `data/inbox` folder, you can just take the `pom.xml` file, and you should see some other output lines in the console window, confirming that the file has been copied. 
 
 ```
 [ thread #2 - file://data/inbox] FileConsumer                   DEBUG Total 1 files to consume
-[ thread #2 - file://data/inbox] FileConsumer                   DEBUG About to process file: GenericFile[Order.xml] using exchange: Exchange[]
-[ thread #2 - file://data/inbox] SendProcessor                  DEBUG >>>> file://data/outbox Exchange[ID-cas-1530461241581-0-1]
-[ thread #2 - file://data/inbox] GenericFileProducer            DEBUG Wrote [data/outbox/Order.xml] to [file://data/outbox]
-[ thread #2 - file://data/inbox] GenericFileOnCompletion        DEBUG Done processing file: GenericFile[Order.xml] using exchange: Exchange[ID-cas-1530461241581-0-1]
-[ thread #2 - file://data/inbox] FileUtil                       DEBUG Retrying attempt 0 to delete file: /home/cas/eclipse-workspace/working-with-camel/data/inbox/Order.xml
-[ thread #2 - file://data/inbox] FileUtil                       DEBUG Tried 1 to delete file: /home/cas/eclipse-workspace/working-with-camel/data/inbox/Order.xml with result: true
+[ thread #2 - file://data/inbox] FileConsumer                   DEBUG About to process file: GenericFile[pom.xml] using exchange: Exchange[]
+[ thread #2 - file://data/inbox] SendProcessor                  DEBUG >>>> file://data/outbox Exchange[ID-ubuntu-1561916263591-0-1]
+[ thread #2 - file://data/inbox] GenericFileProducer            DEBUG Wrote [data/outbox/pom.xml] to [file://data/outbox]
+[ thread #2 - file://data/inbox] GenericFileOnCompletion        DEBUG Done processing file: GenericFile[pom.xml] using exchange: Exchange[ID-ubuntu-1561916263591-0-1]
+[ thread #2 - file://data/inbox] nericFileRenameProcessStrategy DEBUG Renaming file: GenericFile[pom.xml] to: GenericFile[.camel/pom.xml]
+[ thread #2 - file://data/inbox] FileUtil                       DEBUG Tried 1 to rename file: /home/bigdata/eclipse-workspace/working-with-camel/data/inbox/pom.xml to: data/inbox/.camel/pom.xml with result: true
 [ thread #2 - file://data/inbox] FileConsumer                   DEBUG Took 0.001 seconds to poll: data/inbox
 ```
 
 Check that the file has been copied to the `data/outbox` folder. After the file is consumed, it is deleted from the `inbox` folder. 
 
-Stop the running Java application.
+That finishes our first, very simple Camel flow. Stop the Java application and cleanup the `data/outbox` folder by deleting the file you have just copied. 
 
-Now let's create the same flow but using the Spring DSL. 
+Next let's create the same flow but using the Spring DSL. 
 
 ## Using the Spring DSL
 
-Create a new an xml file `camel-context.xml` in the source folder `src/main/resources`. To do that, in the **Package Explorer** right-click on the folder `src/main/resources` and select **New** | **File**. Enter `camel-context.xml` into the **File name** field.
+Create a new xml file `camel-context.xml` in the resource folder `src/main/resources`. To do that, in the **Package Explorer** right-click on the folder `src/main/resources` and select **New** | **Other** and find **File** under **General** and click **Next**. Enter `camel-context.xml` into the **File name** field and click **Finish**.
 
-Add the following XML definition to the empty file.  
+The new file will open in the editor in the middle of the IDE. Navigate to the **Source** tab and add the following XML definition to the empty file.  
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -317,18 +391,19 @@ Add the following XML definition to the empty file.
 		<route>
 			<from uri="file:data/inbox?delay=5s" />
 			<to uri="file:data/outbox" />
-
 		</route>
 	</camelContext>
 </beans>
 ```
 
-Create a new Java Class `FileCopierSpring` in the package `com.trivadis.integrationws.camel` just next to the class created above. 
+We can see a similar from -> to route than with Java DSL, but this time using XML elements. 
+
+Create a new Java Class `FileCopierSpring` in the package `com.integrationws.camel` next to the class `FileCopierJava` we have created above. 
 
 Add the following code to the empty class. 
 
 ```
-package com.trivadis.integrationws.camel;
+package com.integrationws.camel;
 
 import org.apache.camel.spring.Main;
 
@@ -343,52 +418,44 @@ public class FileCopierSpring {
 }
 ```
 
-Now Right click on the class in the **Package Explorer** and select **Run As** | **Java Application**.
+Right click on the class in **Package Explorer** and select **Run As** | **Java Application** to run the application. 
 
-![Alt Image Text](./images/eclipse-javadsl-run-as-java-app.png "Edit Pom.xml")
+![Alt Image Text](./images/eclipse-javadsl-run-as-java-app.png "Run application")
 
-The Java application will start the Camel route and the you should see in the console output window that the [File](http://camel.apache.org/file2.html) component is starting to poll from same the `data/inbox` folder as before.
+The Java application will start the Camel route and the you should again see in the console output window that the [File](http://camel.apache.org/file2.html) component is starting to poll from same `data/inbox` folder as before.
 
-Again copy a file to the `data/inbox` folder and make sure that it is moved to `data/outbox`.
+Copy another file to the `data/inbox` folder and then check that it has been moved to `data/outbox` folder by Apache Camel.
 
-Stop the application. 
+Stop the application and cleanup the `data/outbox` folder by deleting the file you have just copied. 
 
-## Create the Order Management Flow
+We have implemented the same, simple Camel flow also using the Spring DSL. 
 
-After taking our first steps with Apache Camel, let's implement a more practical use case. The following diagram shows the the dataflow we are now going to implement in a step-wise manner. It's an order management flow, where orders are processed in the backend by a legacy system, which we are integrating with other systems using both Files as well as a HTTP service. 
+After taking our first steps with Apache Camel, let's now implement a more practical use case. 
+
+## Create the Order Management Data Flow using Camel
+
+The following diagram shows the data flow we are going to implement in a step-wise manner. 
+It's an order management flow, where orders are processed in the backend by a legacy system, which we are integrating with other systems using both Files as well as a HTTP service. 
 
 ![Alt Image Text](./images/order-management-use-case.png "Edit Pom.xml")
 
-As you can see, there are two different file formats, CSV and XML. The XML is the same one we will write to the local file system at the end of the data flow. The HTTP service will also accept the exact same XML format. So in the case of the CSV forat, we have to transform it to XML in the data flow. 
+As you can see, there are two different file formats, **CSV** and **XML**. 
 
-Before we can start implementing the Camel flow, we need to add an FTP server to the services of the platform. 
+The XML is the same one we will write to the local file system at the end of the data flow. The HTTP service will also accept that same XML format. 
 
-Add the following definition to the `docker-compose.yml` file. 
+But in the case of the CSV format, we have to transform it to XML inside the data flow. 
 
-```
-  ftp:
-    image: stilliard/pure-ftpd
-    hostname: ftp
-    environment:
-      - FTP_USER_NAME=order
-      - FTP_USER_PASS=order
-      - FTP_USER_HOME=/home/orderentry
-    ports:
-      - "21:21"
-      - "30000-30009:30000-30009"
-    restart: always
-```
+The FTP server we will use to get the files is already part of the base environment of the **Integration Platform**.
 
-Perform a `docker-compose up -d` to add the FTP service to the running platform. 
-
-Now with the platform updated, let's start implementing the data flow. We will be using a combination of Spring context for registring some beans and using the Java DSL to define the Camel pipeline. 
+Let's start implementing the data flow. We will be using a combination of a Spring context for registering some beans and of using the Java DSL to define the Camel pipeline. 
 
 ### Read XML data from FTP Server and send to ActiveMQ
-We will start with the XML data sources and implement the FTP Sever source on the left hand side, polling it for new files and sending it to the Active MQ queue. 
 
-For that we will create a new Java application. It will be similar to the one we have seen in Spring DSL example above. 
+We will start with the XML data sources and implement the FTP source on the left hand side, polling it for new files and sending it to an Active MQ queue. 
 
-But first let's add some additional dependencies to the Maven project definition. Double-click on the `pom.xml` file and navigate to the **pom.xml** tab. 
+For that we will create a new Java application. It will be similar to the one we have seen in the Spring DSL example above. 
+
+But before that, let's first add some more dependencies to the Maven project definition. Double-click on the `pom.xml` file and navigate to the **pom.xml** tab. 
 
 Add the following dependencies just after the `camel-spring` dependency.
 
@@ -430,12 +497,14 @@ Add the following dependencies just after the `camel-spring` dependency.
 		</dependency>
 ```
 
-Execute a `mvn eclipse:eclipse` to refresh the Eclipse project settings and to a refresh in Eclipse IDE.
+These are all further dependencies to modules of Apache Camel for working with FTP, HTTP, ActiveMQ and CSV and XML formats.
 
-Create a new Java Class `OrderManagementApplication ` in the package `com.trivadis.integrationws.camel` just next to the classes created before and add the following code.  
+Saving the `pom.xml` will refresh the Eclipse project settings and download the necessary artefacts from the maven repository.
+
+Create a new Java Class `OrderManagementApplication` in the package `com.integrationws.camel` just next to the classes created before and add the following code.  
 
 ```
-package com.trivadis.integrationws.camel;
+package com.integrationws.camel;
 
 import org.apache.camel.spring.Main;
 
@@ -452,7 +521,7 @@ public class OrderManagementApplication {
 }
 ```
 
-As we can see, it references a `camel-order-management-context.xml` file. Create this file in the source folder `src/main/resources` and add the following XML definition:
+As we can see, it references a `camel-order-management-context.xml` file. Create this file in the folder `src/main/resources` and add the following XML definition:
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -469,24 +538,24 @@ As we can see, it references a `camel-order-management-context.xml` file. Create
   		<routeBuilder ref="orderRouteBuilder" />    
 	</camelContext>
 
-	<bean id="orderManagmentRouteBuilder" class="com.trivadis.integrationws.camel.OrderManagementRoute"/>
+	<bean id="orderManagmentRouteBuilder" class="com.integrationws.camel.OrderManagementRoute"/>
 
 	<bean id="activemq"
 		class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<property name="brokerURL" value="tcp://192.168.25.136:61616" />
+		<property name="brokerURL" value="tcp://integrationplatform:61616" />
 	</bean>
 
 </beans>
 ```
 
-It defines the activemq bean, which we will use to produce and conume to/from ActiveMQ. Make sure that you adapt the IP address to your environment (should be the IP address of the Docker Host). 
+It defines the `activemq` bean, which will be used to produce and consume to/from ActiveMQ. Make sure that `integrationplatform` has been added to the `/etc/hosts` file and points to the Docker host. 
 
 Additionally we also register a Route Builder as a bean, and reference it in the `camelConext`. This route builder defines the Camel route using the Java DSL, instead of defining it using the Spring DSL. 
 
 So let's also create the `OrderManagementRoute` Java class. It is a class which extends the Camel `RouteBuilder` class. 
 
 ```
-package com.trivadis.integrationws.camel;
+package com.integrationws.camel;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.BindyType;
@@ -499,16 +568,15 @@ public class OrderManagementRoute extends RouteBuilder {
 		/*
 		 * Consume XML file from FTP server from the "xml" folder and send it to the "orders-xml" queue
 		 */
-        from("ftp://localhost:21/xml?autoCreate=true&username=order&password=order&passiveMode=true&binary=false" + 
+        from("ftp://integrationplatform:21/xml?autoCreate=true&username=order&password=order&passiveMode=true&binary=false" + 
         		"&localWorkDirectory=target/ftp-work&delay=5s&delete=true")
         	.to("activemq:orders-xml");
 
 	}
-
 }
 ```
 
-You can se that we are using some new components, the [ftp](http://camel.apache.org/ftp2.html) component for polling the FTP server, the [activemq](http://camel.apache.org/activemq.html) for producing and later alos consuming to/from ActiveMQ 
+You can se that we are using some new components, the [ftp](http://camel.apache.org/ftp2.html) component for polling the FTP server, the [activemq](http://camel.apache.org/activemq.html) for producing and later also consuming to/from ActiveMQ 
 
 Run the Java application to see our initial data flow implementation in use. You should see the following output on the console window. 
 
@@ -794,7 +862,7 @@ For the transformation from CSV to XML, we can use the [bindy](http://camel.apac
 Create a new Java class `Order` which represents the Order domain object and add the following code:
 
 ```
-package com.trivadis.integrationws.camel;
+package com.integrationws.camel;
 
 import java.io.Serializable;
 
