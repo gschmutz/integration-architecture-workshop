@@ -772,7 +772,34 @@ You should get a message `Done!` signalling that the cluster has been successful
 Click on **Go to cluster view**. 
 
 
-## Dropping a Kafka topic
+## Using Conduktor
+
+A very new tool still being under active development is [Conduktor](http://www.conduktor.io).
+It's a Client application and available for Mac OS X, Windows and Linux.
+
+After installing and starting it you should see the home screen of Conduktor.
+
+![Alt Image Text](./images/conduktor-home.png "Conduktor Home Screent")
+
+Click on **Add new cluster** to create a connection to our Kafka cluster. 
+
+On the **General** tab, enter `Integration Platform` into the **Cluster Name** field and `integrationplatform:9092` into the **Bootstrap Servers** field and click **Test**. You should get a "Connection to integrationplatform:9092 OK!" confirmation message. 
+
+![Alt Image Text](./images/conduktor-cluster-configuration.png "Conduktor Cluster Configuration Screen")
+
+Click on **OK** and navigate to the **Schema Registry** tab and enter `http://integrationplatform:18081` into the **URL** field and click **Test Schema Registry**. 
+
+![Alt Image Text](./images/conduktor-cluster-configuration2.png "Conduktor Cluster Configuration")
+
+Again you should get a confirmation message "Connection to http://integrationplatform:18081 OK!". Click **Save** to save the connection settings.
+
+A connection should now appear on the list on the left. Click on the connection to open the **Conduktor Overview** page for a given cluster, which should look similar to the screenshot below
+
+![Alt Image Text](./images/conduktor-cluster-overview.png "Conduktor Cluster Overview")
+
+Now you can navigate to the different brokers belonging to the cluster as well as navigate to topics and produce and consume from them. 
+
+## Dropping a Kafka topic using the CLI
 
 A Kafka topic can be dropped using the `kafka-topics` utility with the `--delete` option. 
 
