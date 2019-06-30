@@ -694,16 +694,16 @@ To show only the last message (one for each partition), set the `-o` option to `
 kafkacat -b integrationplatform -t test-topic -o -1
 ```
 
-To show only the last message from exactly one partition, add the `-p` option
-
-```
-kafkacat -b integrationplatform -t test-topic -p1 -o -1
-```
-
 You can use the `-f` option to format the output. Here we show the partition (`%p`) as well as key (`%k`) and value (`%s`):
 
 ```
 kafkacat -b integrationplatform -t test-topic -f 'Part-%p => %k:%s\n'
+```
+
+To show only the last message from exactly one partition, add the `-p` option
+
+```
+kafkacat -b integrationplatform -t test-topic -p1 -o -1
 ```
 
 If there are keys which are Null, then you can use `-Z` to actually show NULL in the output:
@@ -757,9 +757,9 @@ Navigate to the **Cluster** menu and click on the drop-down and select **Add Clu
 
 The **Add Cluster** details page should be displayed. Enter the following values into the edit fields / drop down windows:
 
-  * **Cluster Name**: Streaming Platform
-  * **Custer Zookeeper Hosts**: zookeeper-1:2181
-  * **Kafka Version**: 2.0.0
+  * **Cluster Name**: `IntegrationPlatform`
+  * **Custer Zookeeper Hosts**: `zookeeper-1:2181`
+  * **Kafka Version**: `2.2.0`
 
 Select the **Enable JMX Polling**, **Poll consumer information**, **Filter out inactive consumers**, **Enable Active OffsetCache** and **Display Broker and Topic Size** and click on **Save** to add the cluster. 
 
