@@ -9,7 +9,7 @@ In this workshop you will learn how to create topics, how to produce messages, h
 
 Our integration platform does not yet contain a message broker.
 
-Create a file `docker-compose.override.yml` in the `docker` folder (the same place where the `docker-compose.yml` is) and add the version and services header:
+Create a file `docker-compose.override.yml` in the `docker` folder, if it does not yet exists from the previous workshopsand add the version and services header:
 
 ```
 version: "2.1"
@@ -17,7 +17,7 @@ version: "2.1"
 services:
 ```
 
-Now, let's add the additional services for Zookeeper and Kafka to the **Integration Platform**. 
+Now, add the additional services for **Zookeeper** and **Kafka** as well as some UI tools to work with Kafka. 
 The following definition has to be added to the `docker-compose.override.yml` file. 
     
 ```
@@ -166,7 +166,7 @@ The following definition has to be added to the `docker-compose.override.yml` fi
     restart: always            
 ```
 
-Now let's start all these new service by executing `docker-compose up` once more. 
+Now let's start all these new service by executing `docker-compose up -d` once again. 
 
 ```
 docker-compose up -d	
@@ -457,27 +457,18 @@ kafka-console-producer --broker-list broker-1:9092,broker-2:9093 \
 
 Enter your messages so that a key and messages are separated by a comma, i.e. `key1,value1`.  Do that for a few messages and check that they are shown in the console consumers as key and value. 
 
-### Dropping a Kafka topic
-
-A Kafka topic can be dropped using the `kafka-topics` utility with the `--delete` option. 
-
-```
-kafka-topics --zookeeper zookeeper-1:2181 --delete --topic test-topic
-```
-
 ## Working with the Kafkacat utility
 
 [Kafkacat](https://docs.confluent.io/current/app-development/kafkacat-usage.html#kafkacat-usage) is a command line utility that you can use to test and debug Apache Kafka deployments. You can use kafkacat to produce, consume, and list topic and partition information for Kafka. Described as “netcat for Kafka”, it is a swiss-army knife of tools for inspecting and creating data in Kafka.
 
-It is similar to the `kafka-console-producer` and `kafka-console-consumer` you have learnt and used above, but much more powerful and also simpler to use. 
+It is similar to the `kafka-console-producer` and `kafka-console-consumer` you have learnt and used above, but much more powerful and also simpler to use.  
 
-**Kafkacat** is an open-source utility, available at <https://github.com/edenhill/kafkacat>. It is not part of the Confluent platform and also not part of the Streaming Platform we run in docker. 
-
-You can run **Kafkacat** as a standalone utility on any **Linux** or **Mac** computer and remotely connect to a running Kafka cluster. 
+You can run **Kafkacat** as a standalone utility on any **Linux** or **Mac** computer and remotely connect to a running Kafka cluster. Either install it natively on **Linux** or **Mac** or run it as a docker container (for example if you are on Windows).
 
 ### Installing Kafakcat
 
-Officially **Kafkacat** is either supported on **Linux** or **Mac OS-X**. There is no official support for **Windows** yet. There is a Docker image for Kafkacat from Confluent as well.
+Officially **Kafkacat** is either supported on **Linux** or **Mac OS-X**. There is no official support for **Windows** yet. There is a Docker image for Kafkacat from Confluent which you can use instead of installing it locally.
+
 We will show how to install it on **Ubuntu** and **Mac OS-X**. 
 
 In all the workshops we will assume that **Kafkacat** is installed locally on the Docker Host and that `integrationplatform` alias has been added to `/etc/hosts`. 
@@ -516,11 +507,14 @@ brew install kafkacat
 
 #### Docker Container
 
-There is also a Docker container from Confluent which can be used to run **Kafkacat**
+To run **Kafkacat** as a Docker container, use the following command
 
 ```
 docker run --tty --network docker_default confluentinc/cp-kafkacat kafkacat
 ```
+
+This is only the base command, and will show the help page. You will have to add additional options to actually do something with Kafkacat, as shown below.
+
 
 Check the [Docker Image description on Docker Hub](https://hub.docker.com/r/confluentinc/cp-kafkacat) to see more options for using **Kafkacat** with Docker. 
 
@@ -663,9 +657,26 @@ Query offset by timestamp:
 
 Now let's use it to Produce and Consume messages.
 
+We assume that the `test-topic` has been created by going through the workshop and some data has been produced using the `kafka-console-producer` as shown before. 
+
+If you need to generate some messages, you can use the following script from within the `broker-1` docker service/container (perform a `docker exec -ti broker-1 bash` to navigate into the container).
+
+```
+for i in 1 2 3 4 5 6 7 8 9 10
+do
+   echo "$i,This is message $i"| kafka-console-producer \
+	               --broker-list broker-1:9092,broker-2:9093 \
+	               --topic test-topic \
+	               --property parse.key=true \
+	               --property key.separator=, &
+done 
+```
+
 ### Consuming messages using Kafkacat
 
-The simplest way to consume a topic is just specifying the broker and the topic. By default all messages from the beginning of the topic will be shown 
+The simplest way to consume a topic is just specifying the broker and the topic. 
+
+By default all messages from the beginning of the topic will be shown (we assume that `integrationplatform` alias has been set in the `/etc/hosts` file)
 
 ```
 kafkacat -b integrationplatform -t test-topic
@@ -759,4 +770,13 @@ You should get a message `Done!` signalling that the cluster has been successful
 ![Alt Image Text](./images/kafka-manager-cluster-added.png "Kafka Manager Add Cluster2")
 
 Click on **Go to cluster view**. 
+
+
+## Dropping a Kafka topic
+
+A Kafka topic can be dropped using the `kafka-topics` utility with the `--delete` option. 
+
+```
+kafka-topics --zookeeper zookeeper-1:2181 --delete --topic test-topic
+```
 
