@@ -278,18 +278,21 @@ Under **Connection Settings**, enter `ActiveMQ` into the **Name** field, `active
 
 Now click on **Connect to remote server** to connect to the ActiveMQ instance. On the **Sign in** popup window, enter `admin` into the **Username** field and `admin` into the **Password** field and click **Sign In**. 
 
-The ActiveMQ dashboard will be shown.
+Navigate to the **ActiveMQ** tab on the menu bar on the top to view the ActiveMQ dashboard as shown below
 
 ![Alt Image Text](./images/hawtio-activemq-overview.png "Schema Registry UI")
 
-On the right side you can navigate to the **Queue**s and **Topic**s available on the broker. 
-On the right side you can see metrics for the queue.
+On the right side you can navigate to the **Queue**s and **Topic**s available on the broker. If you click on **Queue** you will see all the queues with some statistics on the size, the number of consumers and producers and how many messages have been enqueued and dequeued. 
 
-Click on **Browse** to see the messages currently in the queue waiting for consumption.
+No click on the `TEST` queue, which has been created with the `activemq` utility above. You will see very detailed metrics of the `TEST` queue.
+
+![Alt Image Text](./images/hawtio-activemq-queue-metrics.png "Queue Metrics")
+
+Now click on **Browse** to see the messages currently in the queue waiting for consumption.
 
 ![Alt Image Text](./images/hawtio-activemq-queue-browse.png "Schema Registry UI")
 
-Navigate and familiarise yourself with the possibilities of Hawtio. 
+There are other features of hawtio we don't cover here. 
 
 ## Using the "A" command line utility
 
