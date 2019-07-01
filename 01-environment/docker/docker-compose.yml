@@ -57,7 +57,7 @@ services:
     hostname: ftp
     environment:
 #      - PUBLICHOST="192.168.73.86"
-      - PUBLICHOST=ftp
+      - PUBLICHOST=${DOCKER_HOST_IP}
       - FTP_USER_NAME=orderproc
       - FTP_USER_PASS=orderproc
       - FTP_USER_HOME=/home/ftp-data
