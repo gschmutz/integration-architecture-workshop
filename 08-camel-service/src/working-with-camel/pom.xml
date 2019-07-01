@@ -1,25 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.trivadis.integrationws.camel</groupId>
-	<artifactId>working-with-camel</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-
-	<properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.integration.ws</groupId>
+  <artifactId>working-with-camel</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+   <properties>
 		<activemq-version>5.15.4</activemq-version>
-		<camel-version>2.21.1</camel-version>
+		<camel-version>2.24.1</camel-version>
 		<spring-version>4.1.7.RELEASE</spring-version>
 		<slf4j-version>1.7.5</slf4j-version>
 
 		<!-- use utf-8 encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
+    </properties>
 
-
-
-	<dependencies>
+    <dependencies>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-core</artifactId>
@@ -31,7 +27,7 @@
 			<artifactId>camel-spring</artifactId>
 			<version>${camel-version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-ftp</artifactId>
@@ -67,14 +63,14 @@
 			<artifactId>activemq-camel</artifactId>
 			<version>${activemq-version}</version>
 		</dependency>
-
+		
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j-version}</version>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		    <version>${slf4j-version}</version>
 		</dependency>
-	</dependencies>
-
+    </dependencies>
+    
 	<build>
 		<defaultGoal>install</defaultGoal>
 
@@ -101,13 +97,7 @@
 					<artifactId>camel-maven-plugin</artifactId>
 					<version>${camel-version}</version>
 				</plugin>
-				<plugin>
-					<groupId>io.hawt</groupId>
-					<artifactId>hawtio-maven-plugin</artifactId>
-					<version>${hawtio-version}</version>
-				</plugin>
 			</plugins>
 		</pluginManagement>
-	</build>
-
+	</build>      
 </project>

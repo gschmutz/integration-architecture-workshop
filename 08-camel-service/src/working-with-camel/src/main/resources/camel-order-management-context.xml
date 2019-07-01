@@ -12,12 +12,11 @@
   		<routeBuilder ref="orderManagementRouteBuilder" />    
 	</camelContext>
 
-	<bean id="orderManagementRouteBuilder" class="com.trivadis.integrationws.camel.OrderManagementRoute"/>
+	<bean id="orderManagementRouteBuilder" class="com.integrationws.camel.OrderManagementRoute"/>
 
 	<bean id="activemq"
 		class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<property name="brokerURL" value="tcp://192.168.25.136:61616" />
+		<property name="brokerURL" value="tcp://integrationplatform:61616" />
 	</bean>
-
 
 </beans>

@@ -1,4 +1,4 @@
-package com.trivadis.integrationws.camel;
+package com.integrationws.camel;
 
 import org.apache.camel.spring.Main;
 

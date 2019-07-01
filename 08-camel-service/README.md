@@ -887,7 +887,7 @@ Add the following additional two route definitions to the `OrderManagementRoute`
 		/*
 		 * Consume CSV file from FTP server from the "csv" folder and send it to the "orders-csv" queue
 		 */
-        from("ftp://192.168.73.86:21/csv?autoCreate=false&username=order&password=order&passiveMode=true&binary=false" + 
+        from("ftp://integrationplatform:21/csv?autoCreate=false&username=order&password=order&passiveMode=true&binary=false" + 
         		"&localWorkDirectory=target/ftp-work&delay=15s&delete=true")
         	.to("activemq:orders-csv");
         	
