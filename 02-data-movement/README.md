@@ -55,6 +55,8 @@ Navigate to the newly created folder `data-integration` and run either `spoon.sh
 
 Navigate to <http://integrationplatform:5800> to open the Filezilla UI in a browser window. 
 
+Before you connect to the FTP service, make sure that you change the Filezilla FTP mode to `Active`. From the **File** menu, select **Settings ...** and then navigate to **FTP** and change the **Transfer Mode** to **Active**. Click **OK** to save the settings. 
+
 1. Enter `admin123` into the **password** field and click **Submit**.
 2. Enter `ftp` into the **host** field.
 3. Enter `orderproc` into the **Username** field and again `orderproc` into the **Password** field. 
