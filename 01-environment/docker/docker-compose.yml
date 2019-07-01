@@ -116,4 +116,3 @@ services:
       GRANT_SUDO: "true"
       TINI_SUBREAPER: "true"
     restart: always
-
