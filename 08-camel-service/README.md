@@ -6,7 +6,27 @@ We will see how Apache Camel can help in integrating different applications/syst
 
 ## Adding the necessary services to the environment
 
-For this workshop we will use the `ftp` service which is already part of the base platform and `activemq` & `hawtio`, which have to be added to the `docker-compose.override.yml` file, if it does not already exist from the ActiveMQ workshop. 
+For this workshop we will use the `ftp` service which is already part of the base platform. Make sure that you update the `docker-compose.yml` to the latest version in GitHub, by executing a `git pull`. The `ftp` service should look like the one below
+
+```
+  ftp:
+    image: stilliard/pure-ftpd
+    container_name: ftp
+    hostname: ftp
+    environment:
+#      - PUBLICHOST="192.168.73.86"
+      - PUBLICHOST=${DOCKER_HOST_IP}
+      - FTP_USER_NAME=orderproc
+      - FTP_USER_PASS=orderproc
+      - FTP_USER_HOME=/home/ftp-data
+      - FTP_MAX_CLIENTS=9
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    restart: always
+```
+
+Additionally to the base environment, we need `activemq` & `hawtio` if not already existing from the previous workshops. Add the following services to the `docker-compose.override.yml` file 
 
 ```
   activemq:
@@ -535,7 +555,7 @@ As we can see, it references a `camel-order-management-context.xml` file. Create
 
 
 	<camelContext xmlns="http://camel.apache.org/schema/spring">
-  		<routeBuilder ref="orderRouteBuilder" />    
+  		<routeBuilder ref="orderManagementRouteBuilder" />    
 	</camelContext>
 
 	<bean id="orderManagmentRouteBuilder" class="com.integrationws.camel.OrderManagementRoute"/>
@@ -568,17 +588,22 @@ public class OrderManagementRoute extends RouteBuilder {
 		/*
 		 * Consume XML file from FTP server from the "xml" folder and send it to the "orders-xml" queue
 		 */
-        from("ftp://integrationplatform:21/xml?autoCreate=true&username=order&password=order&passiveMode=true&binary=false" + 
-        		"&localWorkDirectory=target/ftp-work&delay=5s&delete=true")
+        from("ftp://integrationplatform:21/xml?autoCreate=true&username=orderproc&password=orderproc&passiveMode=true&binary=false" + 
+        		"&localWorkDirectory=target/ftp-work&delay=15s&delete=true")
         	.to("activemq:orders-xml");
 
 	}
 }
 ```
 
-You can se that we are using some new components, the [ftp](http://camel.apache.org/ftp2.html) component for polling the FTP server, the [activemq](http://camel.apache.org/activemq.html) for producing and later also consuming to/from ActiveMQ 
+You can se that we are using some new components
 
-Run the Java application to see our initial data flow implementation in use. You should see the following output on the console window. 
+  * the [ftp](http://camel.apache.org/ftp2.html) component for polling the FTP server
+  * the [activemq](http://camel.apache.org/activemq.html) for producing and later also consuming to/from ActiveMQ 
+
+Run the Java application again by right-clicking on the `OrderManagementRoute` class to see the initial data flow implementation in action. 
+
+You should see the following output on the console window. 
 
 ```
 [                          main] CamelNamespaceHandler          DEBUG Using org.apache.camel.spring.CamelContextFactoryBean as CamelContextBeanDefinitionParser
@@ -682,21 +707,35 @@ Run the Java application to see our initial data flow implementation in use. You
 
 We can see that the `FtpConsumer` is polling the `xml` folder for some Order XML documents. 
 
-Create a new file `order-1.xml` and copy an order similar to the one shown below:
+You can find a sample order in the file [`docker/data-transfer/oderdata/order-1.xml`](../01-environment/docker/data-transfer/orderdata/order-1.xml). It contains the following XML document, representing an order
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <order name="IPad" amount="100" customer="Peter Muster"/>
 ```
 
-Upload it to the xml folder on the FTP server using either the ftp command line utility or the FileZilla GUI application (which you can download from here: <https://filezilla-project.org/download.php?type=client>). 
+Upload it to the `xml` folder on the FTP server using either the `ftp` command line utility or the FileZilla GUI application, which is part of the base environment. 
 
-The FTP Server can be reached on Host **localhost** and Port **21**. Use **order** for the **Username** and **order** also for the **Password**.
+#### Using FileZilla
+
+FileZilla can bereached by navigating to <http://integrationplatform:5800>. 
+
+Before you connect to the FTP service, make sure that you change the Filezilla FTP mode to `Active`. From the **File** menu, select **Settings ...** and then navigate to **FTP** and change the **Transfer Mode** to **Active**. Click **OK** to save the settings. 
+
+Now you can connect to the FTP Server by entering `ftp` into the **Host** field, `orderproc` into both the **Username** and **Password** field and `21` into the **Port** field. Click **Quickconnect** to connect to the ftp server. 
+
+Create the `xml` folder on the **Remote Site** by right-clicking on the `/` folder and selecting **Create Directory**. 
+On the **Local Site** folder tree, navigate to the **orderdata** folder inside the **data-transfer** folder and move the `order-1.xml` to the `xml` folder. 
+
+![Alt Image Text](./images/filezilla-homepage.png "Edit Pom.xml")
+
+#### Using FTP CLI
 
 To connect to the FTP server using the `ftp` CLI, perform the following command
 
 ```
-ftp -p localhost 21
+cd integration-architecture-workshop/01-environment/docker/data-transfer/orderdata
+ftp -p ${DOCKER_HOST_IP} 21
 ```
 
 You will be asked to enter the **Name** (Username) and the **Password**. You can see the output of the CLI below. 
@@ -715,6 +754,11 @@ Password:
 230 OK. Current directory is /
 Remote system type is UNIX.
 Using binary mode to transfer files.
+```
+
+now change the mode to transfer `ASCII`
+
+```
 ftp> ascii
 200 TYPE is now ASCII
 ftp> 
@@ -733,11 +777,8 @@ local: order-1.xml remote: xml/order-1.xml
 ftp> 
 ```
 
-The following screenshot shows how the FileZilla client application look like. You can connect in the line on the top and then use drag-and-drop to move a file from the local filesystem on the left to the FTP server on the right. 
 
-![Alt Image Text](./images/filezilla-homepage.png "Edit Pom.xml")
-
-The file will be picked up by the FtpConsumer within 5 seconds (the polling interval set in the Camel route) and you should see that in the console output of the running application. 
+As soon as the file has been uploaded to FTP, it will be picked up by the `FtpConsumer` within 15 seconds (the polling interval set in the Camel route) and you should see that in the console output of the running application. 
 
 ```
 [ad #2 - ftp://localhost:21/xml] FtpConsumer                    DEBUG Took 0.013 seconds to poll: xml
@@ -761,7 +802,7 @@ The file will be picked up by the FtpConsumer within 5 seconds (the polling inte
 [ad #2 - ftp://localhost:21/xml] FtpConsumer                    DEBUG Took 0.013 seconds to poll: xml
 ```
 
-Check with the ActiveMQ Web console that there is a message waiting for consumption in the queue `orders-xml` as shown in the screenshot below:
+Additionally, a message should have been sent to the AcitveMQ queue. Check with the ActiveMQ Web console (<http://integrationplatform:8161/admin>) that there is a message waiting for consumption on the queue `orders-xml` as shown in the screenshot below:
 
 ![Alt Image Text](./images/activemq-console-browse-queue.png "Edit Pom.xml")
 
@@ -769,15 +810,15 @@ Click on the message to see the headers, properties and payload of this first me
 
 ![Alt Image Text](./images/activemq-console-browse-message.png "Edit Pom.xml")
 
-You can see that the order in XML format can be found in the queue. It works as expected!
+You can find our order in the XML format, waiting to get consumed. It works as expected!
 
-Stop the application. 
+Stop the application, so that we can continue with the rest of the message flow. 
 
 ### Add the Order Processing Backend
 
-Now let's finish the Camel route by consuming from the `orders-xml` queue and storing it in a local file in the XML format. 
+Now let's finish the Camel route by consuming from the `orders-xml` queue and storing it in a local file in XML format. 
 
-Add the follwing two route definitions to the `OrderManagementRoute` Java class. 
+Add the following two route definitions to the `OrderManagementRoute` Java class. 
 
 ```        
 		/*
@@ -789,48 +830,50 @@ Add the follwing two route definitions to the `OrderManagementRoute` Java class.
 		/*
 		 * the "order processing", here it only writes the document to a file
 		 */
-		 from("direct:order-processing")
+		from("direct:order-processing")
         	.to("log:DEBUG")
         	.to("file:data/processed?fileName=orders/${date:now:yyyy-MM-dd-HH}/${id}.xml");
 ```
         	
-It consumes the messages from the queue and sends it to a [direct](http://camel.apache.org/direct.html) component for reusing a central flow (which we will see in use later). For the [file](http://camel.apache.org/file2.html) component we are using the capability for defining the name of the output file.  
+They consume the messages from the queue and send them to the [direct](http://camel.apache.org/direct.html) component for reusing a central flow (which we will see in use later). For the [file](http://camel.apache.org/file2.html) component we are using the capability for controlling the name of the output file.  
 
-Restart the application and you should see that the message got consumed from the queue and a file is written to the `data/processed` folder. Inside this folder, there is an `orders/<datetime>/` folder, where the files are stored by hour. 
+Restart the application and you should see that the message got consumed from the queue and a file is written to the `data/processed` folder below the Java project folder. Inside this folder, there is an `orders/<datetime>/` folder, where the files are stored by hour. 
 
-![Alt Image Text](./images/local-file-list.png "Edit Pom.xml")
+![Alt Image Text](./images/local-file-list.png "Local File List")
 
-We can see that the first version of the Camel flow is working. Now let's add the HTTP endpoint to the Application. 
+We can see that the next part of the Camel flow is working. Now let's add the HTTP endpoint to the Application. 
 
 ### Add an HTTP endpoint
 
-The HTTP endpoint accepts also the XML document, exactly like the one used for the files on the FTP server. 
+The **HTTP endpoint** should accept a document using the same XML format, as for the files on the FTP server. 
 
-Add the follwing two route definitions to the `OrderManagementRoute` Java class. 
+Add the following additional route definition to the `OrderManagementRoute` Java class. 
 
 ```
-        /*
-         * HTTP Endpoint 
-         */
-        from("jetty:http://0.0.0.0:8888/placeorder")
-        	.inOnly("activemq:orders-xml")
-        	.transform().constant("OK");
+	    /*
+	     * HTTP Endpoint 
+	     */
+	    from("jetty:http://0.0.0.0:8888/placeorder")
+	         	.inOnly("activemq:orders-xml")
+	        	.transform().constant("OK");
 ```
 
-We are using one new component, the [jetty](http://camel.apache.org/jetty.html) component to expose the HTTP interface. You can see that the message is sent to the same queue `orders-xml` as before. It's an `inOnly` flow, as we are not getting any return value from the queue. We are using a `transform().constant()` expression to return a response message on the HTTP request. 
+We are using one new component, the [jetty](http://camel.apache.org/jetty.html) component to expose the HTTP interface. 
 
-Restart the application and let's test the HTTP endpoint. You can use the `curl` command line utility to send a POST request on `http://localhost:8888/placeorder` with the XML message. 
+You can see that the message is sent to the same queue `orders-xml` as before. It's an `inOnly` flow, as we are not getting any return value from the queue. We are using a `transform().constant()` expression to return a response message on the HTTP request. 
+
+Restart the application and let's test the HTTP endpoint. You can use the `curl` command line utility to send a POST request to `http://localhost:8888/placeorder` with the XML message. 
 
 ```
 curl -X POST -i http://localhost:8888/placeorder --data '<?xml version="1.0" encoding="UTF-8"?>
-<order name="IPad" amount="100" customer="Peter Muster"/>'
+<order name="IPhone" amount="500" customer="Barbara Muster"/>'
 ```
 
-Alternatively you can also use the Firefox Add-on **RESTClient**. The following screenshot shows it in action.  
+Alternatively you can also use the **RESTClient** Firefox add-on. The following screenshot shows it in action.  
 
-![Alt Image Text](./images/firefox-restclient.png "Edit Pom.xml")
+![Alt Image Text](./images/firefox-restclient.png "Firefox Restclient")
 
-After sending a message on the HTTP endpoint, you should see another file in the   `data/processed` folder.
+After sending a message on the HTTP endpoint, you should see another file in the `data/processed` folder.
 
 Stop the application. 
 
@@ -838,14 +881,14 @@ Last but not least, let's add the support for CSV files as input on the FTP serv
 
 ### Read CSV files from FTP Server
  
-Add the follwing two route definitions to the `OrderManagementRoute` Java class. 
+Add the following additional two route definitions to the `OrderManagementRoute` Java class. 
 
 ```
 		/*
 		 * Consume CSV file from FTP server from the "csv" folder and send it to the "orders-csv" queue
 		 */
-        from("ftp://localhost:21/csv?autoCreate=false&username=order&password=order&passiveMode=true&binary=false" + 
-        		"&localWorkDirectory=target/ftp-work&delay=5s&delete=true")
+        from("ftp://192.168.73.86:21/csv?autoCreate=false&username=order&password=order&passiveMode=true&binary=false" + 
+        		"&localWorkDirectory=target/ftp-work&delay=15s&delete=true")
         	.to("activemq:orders-csv");
         	
         /*
@@ -857,7 +900,11 @@ Add the follwing two route definitions to the `OrderManagementRoute` Java class.
     		.to("direct:order-processing");
 ```
 
-For the transformation from CSV to XML, we can use the [bindy](http://camel.apache.org/bindy.html) component and the [jaxb](http://camel.apache.org/jaxb.html) component. The transformation works by first converting the CSV into a Java object and from the Java object to XML. The output of the transformation is sent to the direct route, to reuse the route for the "order-processing". 
+For the transformation from CSV to XML, we are using the [bindy](http://camel.apache.org/bindy.html) component and the [jaxb](http://camel.apache.org/jaxb.html) component. 
+
+The transformation works by first converting the CSV into a Java object and then from the Java object to XML. The output of the transformation is sent to the direct route, to reuse the route of the "order-processing". 
+
+The flow has errors, because the `Order.class` is missing.
 
 Create a new Java class `Order` which represents the Order domain object and add the following code:
 
@@ -923,15 +970,25 @@ public class Order implements Serializable {
 
 The mapping from CSV and to XML is done using Java annotation.
 
-Now let's restart the application, so we can test the CSV file behaviour. 
-Create an order-1.csv file and add an order in the format shown below. 
+Now let's restart the application, so we can test the CSV file behaviour. The new `ftp` camel component is now listening on the `csv` folder, which we have to create in the same way as we have created the `xml` folder. 
+ 
+You can find a sample order in CSV format in the file [`docker/data-transfer/oderdata/order-1.csv`](../01-environment/docker/data-transfer/orderdata/order-1.csv). It contains the following CSV document, representing a single order
 
 ```
 name,amount,customer
-iphone,2,Paul Jones
+iphone,600,Paul Jones
 ```
 
-Upload it to the FTP Server into the `csv` folder. It should be picked up within 5 seconds, transformed to XML and you should see another file in the `data/processed` folder.
+Copy it to the `csv` folder on the FTP server using either the `ftp` command line utility or the FileZilla GUI application.  
+ 
+
+It should be picked up within 15 seconds, transformed to XML and you should see another file in the `data/processed` folder. Check that it is a valid XML and that you find the same data as in the CSV file
+
+```
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<order name="iphone" amount="600" customer="Paul Jones"/>
+```
 
 
+This finishes the implementation of a Camel Flow, showing a popular integration framework in action!
 
