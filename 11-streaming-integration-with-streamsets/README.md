@@ -1,4 +1,4 @@
-# Streaming Data Integartion using StreamSets and Kafka
+# Streaming Data Integration using StreamSets and Kafka
 
 ### Add StreamSets to Integration Platform
 
