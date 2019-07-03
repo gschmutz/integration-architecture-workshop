@@ -1,6 +1,6 @@
 # Working with Eclipse
 
-Eclipse is a popular IDE (Integrated Development Environment) for working with Java. This guide is based on the latest vesion of Eclipse, [Eclipse OXYGEN](http://www.eclipse.org/downloads/).
+Eclipse is a popular IDE (Integrated Development Environment) for working with Java. This guide is based on the latest version of Eclipse, [Eclipse OXYGEN](http://www.eclipse.org/downloads/).
 
 ## Create a new Maven Project
 
