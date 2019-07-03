@@ -1,4 +1,4 @@
-# Producing and Consuming AciveMQ using Java Message Service (JMS)
+# Producing and Consuming ActiveMQ using Java Message Service (JMS)
 In this workshop we will learn how to use the [Java Message Service (JMS) API](https://en.wikipedia.org/wiki/Java_Message_Service).
 
 JMS is a Java API and therefore only available from the Java Virtual Machine. So you need to use a language based on the JVM, such as of course Java. We will be using some sample Java classes to see how working with Queues and Topics over JMS works. 
