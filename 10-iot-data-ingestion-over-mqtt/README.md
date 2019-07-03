@@ -8,11 +8,11 @@ The following diagram shows the setup of the data flow we will be implementing.
 
 We will not be using real-life data, but have a program simulating some drivers and their trucks. It's the same one we have already used in the [Working with ActiveMQ broker](../04-working-with-activemq-broker/README.md) workshop.
 
-## ## Adding the necessary additional services to the environment
+## Adding the necessary additional services to the environment
 
 Our **Integration Platform** does not yet provide all the services we need in this workshop, such as a **Kafka Cluster**, **Kafka Connect** and a **MQTT broker**.
 
-Let's start with MQTT broker. Add the following two services to the `docker-compose.override.yml` file. 
+Let's start with MQTT broker. Add the following two services to the `docker-compose.override.yml` file. Make sure that you either remove the `activemq` service from the docker services or remove the port mapping on `1883' from it. 
 
 ```
   mosquitto-1:

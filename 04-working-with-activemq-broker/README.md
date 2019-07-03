@@ -26,7 +26,7 @@ The following definition has to be added to the `docker-compose.override.yml` fi
     container_name: activemq
     ports:
       # mqtt
-      - "1883:1883"
+      - "1885:1883"
       # amqp
       - "5672:5672"
       # ui
