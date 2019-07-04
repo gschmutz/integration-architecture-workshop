@@ -2,11 +2,13 @@
 
 In this workshop we will learn how to use an existing SOAP Web Service from the testing tool called [SoapUI](http://soapui.org).
 
-For our tests we will deploy a fictitious web service for checking a credit card. 
+For our tests we will deploy a fictitious web service for checking a credit card and then use SoapUI to invoke the service. Both the Web Service as well as SoapUI cannot be started as a Docker Container, therefore our Docker Stack is not used by this workshop.
 
 ## Install SoapUI
 
-SoapUI is a very popular tool for testing both REST and SOAP services. There is an enterprise as well as an open-source edition available. It can be installed on Mac OS-X, Windows and Linux. Download and install the version corresponding with your operating system from [here](https://www.soapui.org/downloads/soapui.html).
+SoapUI is a very popular tool for testing both REST and SOAP services. There is an enterprise as well as an open-source edition available. As it is a Rich-Client, it can only be started inside a Docker container, if used headless (= without the GUI). In our case, we want to use the GUI, so we have to install it on our local machine. 
+
+SoapUI can be installed on Mac OS-X, Windows and Linux. Download and install the version corresponding with your operating system from [here](https://www.soapui.org/downloads/soapui.html).
 
 Once it is installed, click on the icon to start it. You should get the SoapUI Home screen as shown below. 
 
