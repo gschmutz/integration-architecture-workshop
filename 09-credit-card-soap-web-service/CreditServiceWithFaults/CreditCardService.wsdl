@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Schmutz Guido (Trivadis Holding AG) -->
+<wsdl:definitions xmlns:tns="http://xmlns.oracle.com/TestingBestPracticeApplication/CreditCardProject/CreditCardValidation" xmlns:inp1="http://cdm.eurojourney.com/hnd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:out1="http://cdm.eurojourney.com/hnd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="CreditCardValidation" targetNamespace="http://xmlns.oracle.com/TestingBestPracticeApplication/CreditCardProject/CreditCardValidation">
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://cdm.eurojourney.com/hnd" schemaLocation="xsd/CreditCardPayment.cdm.xsd"/>
+		</schema>
+	</wsdl:types>
+	<wsdl:message name="requestMessage">
+		<wsdl:part name="request" element="inp1:validateCreditCardPaymentRequest"/>
+	</wsdl:message>
+	<wsdl:message name="replyMessage">
+		<wsdl:part name="reply" element="inp1:validateCreditCardPaymentResponse"/>
+	</wsdl:message>
+	<wsdl:message name="invalidCreditCardNumberFault">
+		<wsdl:part name="error" element="inp1:invalidCreditCardNumberFault"/>
+	</wsdl:message>
+	<wsdl:message name="creditCardExpiredFault">
+		<wsdl:part name="error" element="inp1:creditCardExpiredFault"/>
+	</wsdl:message>
+	<wsdl:portType name="CreditCardValidationPT">
+		<wsdl:operation name="validateCard">
+			<wsdl:input message="tns:requestMessage"/>
+			<wsdl:output message="tns:replyMessage"/>
+			<wsdl:fault name="InvalidCreditCardNumberFault" message="tns:invalidCreditCardNumberFault"/>
+			<wsdl:fault name="CreditCardExpiredFault" message="tns:creditCardExpiredFault"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="CreditCardValidationBinding" type="tns:CreditCardValidationPT">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="validateCard">
+			<soap:operation soapAction="urn:#validateCard"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="InvalidCreditCardNumberFault"/>
+			<wsdl:fault name="CreditCardExpiredFault"/>
+		</wsdl:operation>
+	</wsdl:binding>
+ <wsdl:service name="CreditCardValidationService">
+  <wsdl:port name="CreditCardValidationP"
+             binding="tns:CreditCardValidationBinding">
+   <soap:address location="not-specified"/>
+  </wsdl:port>
+ </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,34 @@
+<xs:schema xmlns:tns="http://cdm.eurojourney.com/hnd" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://cdm.eurojourney.com/hnd" 
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:element name="creditCard" type="tns:CreditCardT"/>
+	<xs:complexType name="CreditCardT">
+		<xs:sequence>
+			<xs:element name="creditCardKind" type="tns:CreditCardKindT"/>
+			<xs:element name="cardNumber" type="xs:string" minOccurs="1"/>
+			<xs:element name="cardholderFirstName" type="xs:string" minOccurs="1"/>
+			<xs:element name="cardholderLastName" type="xs:string" minOccurs="1"/>
+			<xs:element name="expirationMonth" type="tns:MonthT" minOccurs="1"/>
+			<xs:element name="expirationYear" type="tns:YearT" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="CreditCardKindT">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="visa"/>
+			<xs:enumeration value="amexco"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MonthT">
+		<xs:restriction base="xs:int">
+			<xs:pattern value="[0-1][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="YearT">
+		<xs:restriction base="xs:int">
+			<xs:pattern value="[0-9][0-9][0-9][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

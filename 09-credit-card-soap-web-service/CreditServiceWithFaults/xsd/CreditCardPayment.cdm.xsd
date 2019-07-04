@@ -1,0 +1,38 @@
+<xs:schema xmlns:tns="http://cdm.eurojourney.com/hnd" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://cdm.eurojourney.com/hnd" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
+
+	<xs:include schemaLocation="CreditCard.cdm.xsd"/>
+
+	<xs:element name="validateCreditCardPaymentRequest" type="tns:ValidateCreditCardPaymentRequestT"/>
+	<xs:element name="validateCreditCardPaymentResponse" type="tns:ValidateCreditCardPaymentResponseT"/>
+	<xs:element name="invalidCreditCardNumberFault" type="tns:InvalidCreditCardNumberFaultT"/>
+	<xs:element name="creditCardExpiredFault" type="tns:CreditCardExpiredFaultT"/>
+
+	<xs:complexType name="ValidateCreditCardPaymentRequestT">
+		<xs:sequence>
+			<xs:element name="requestNr" type="xs:string" minOccurs="1"/>
+			<xs:element name="creditCard" type="tns:CreditCardT" minOccurs="1"/>
+			<xs:element name="forAmount" type="xs:double" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ValidateCreditCardPaymentResponseT">
+		<xs:sequence>
+			<xs:element name="requestNr" type="xs:string" minOccurs="1"/>
+			<xs:element name="reservationNumber" type="xs:string" minOccurs="0" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvalidCreditCardNumberFaultT">
+		<xs:sequence>
+			<xs:element name="creditCard" type="tns:CreditCardT" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CreditCardExpiredFaultT">
+		<xs:sequence>
+			<xs:element name="creditCard" type="tns:CreditCardT" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>
