@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	~ Copyright 2007 the original author or authors.
+	~
+	~ Licensed under the Apache License, Version 2.0 (the "License");
+	~ you may not use this file except in compliance with the License.
+	~ You may obtain a copy of the License at
+	~
+	~      http://www.apache.org/licenses/LICENSE-2.0
+	~
+	~ Unless required by applicable law or agreed to in writing, software
+	~ distributed under the License is distributed on an "AS IS" BASIS,
+	~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	~ See the License for the specific language governing permissions and
+	~ limitations under the License.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:visa="http://trivadis.com/integrationws/visaCard/schemas"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	targetNamespace="http://trivadis.com/integrationws/visaCard/schemas">
+	<xs:element name="ValidateRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="cardNumber" type="xs:string" minOccurs="1" />
+				<xs:element name="cardholderFirstName" type="xs:string" minOccurs="1" />
+				<xs:element name="cardholderLastName" type="xs:string" minOccurs="1" />
+				<xs:element name="validThroughMonth" type="visa:ValidThroughMonthT" minOccurs="1" />
+				<xs:element name="validThroughYear" type="visa:ValidThroughYearT" minOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ValidateResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="status" type="xs:string" minOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BookRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="cardNumber" type="xs:string" minOccurs="1" />
+				<xs:element name="cardholderFirstName" type="xs:string" minOccurs="1" />
+				<xs:element name="cardholderLastName" type="xs:string" minOccurs="1" />
+				<xs:element name="validThroughMonth" type="visa:ValidThroughMonthT" minOccurs="1" />
+				<xs:element name="validThroughYear" type="visa:ValidThroughYearT" minOccurs="1" />
+				<xs:element name="bookAmount" type="xs:double" minOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BookResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="bookingReferenceNumber" type="xs:long" minOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="ValidThroughMonthT">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-1][0-9]" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ValidThroughYearT">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[1-2][0-9][0-9][0-9]" />
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

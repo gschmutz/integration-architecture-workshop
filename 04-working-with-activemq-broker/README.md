@@ -1,69 +1,10 @@
 # Getting started with Apache ActiveMQ
+
 In this workshop we will learn the basics of working with [Apache ActiveMQ](http://activemq.apache.org). Make sure that you have created the environment as described in [Preparing the Environment](../01-environment/01-environment.md).
 
 The main units of interest in Apache ActiveMQ are queues, topics and messages.
 
 In this workshop you will learn how to use and work with Queues and Topics and send and consume messages to/from both of them.
-
-## Adding the necessary services to the environment
-
-Our integration platform does not yet contain a message broker.
-
-Create a file `docker-compose.override.yml` in the `docker` folder (the same place where the `docker-compose.yml` is) and add the version and services header:
-
-```
-version: "2.1"
-
-services:
-```
-
-Now, let's add the `activemq` and `hawtio` service to the **Integration Platform**. 
-The following definition has to be added to the `docker-compose.override.yml` file. 
-
-```
-  activemq:
-    image: rmohr/activemq
-    container_name: activemq
-    ports:
-      # mqtt
-      - "1885:1883"
-      # amqp
-      - "5672:5672"
-      # ui
-      - "8161:8161"
-      # stomp
-      - "61613:61613"
-      # ws
-      - "61614:61614"
-      # jms
-      - "61616:61616"
-#    volumes:
-#      - ./container-volume/activemq/data:/opt/activemq/data
-    restart: always
- 
-  hawtio:
-    image: "erikwramner/hawtio"
-    container_name: hawtio
-    hostname: hawtio
-    ports:
-      - "38085:8080"  
-```
-
-By default the ActiveMQ stores its data (the messages you persist) inside the docker container. This has the effect that you lose the data, should you stop and remove the container. 
-
-If you don't want that, then you have to map a volume from the Docker Host to the folder inside the container, where ActiveMQ stored its data. For that you have to uncomment the volume mapping in the `activemq` service definition. By that the `container-volume/activemq/data` folder is used to store the Active MQ data. You will have to create that folder inside the `docker/of container-volume` folder and give it the necessary privileges, before you can start using it.
-
-```
-cd integration-architecture-workshop/01-environment/docker
-mkdir -p container-volume/activemq/data
-chmod 777 -R container-volume
-```
-	
-Now let's start that services by executing `docker-compose up` once more. 
-
-```
-docker-compose up -d	
-```
 
 ## Testing Broker with built-in Command Line Utility
 
@@ -239,14 +180,14 @@ As soon as it is running, you should see messages appearing on the consumer.
 You can also use the **ActiveMQ** utility to browse for messages. This will show all messages, which have not yet been consumed. 
 
 ``` 
-./activemq browse --amqurl tcp://localhost:61616 TEST
+./activemq browse --amqurl tcp://dataplatform:61616 TEST
 ``` 
 
 ## Using the ActiveMQ Web Console
 
 The [ActiveMQ Web Console](http://activemq.apache.org/web-console.html) is a web based Management Web GUI for working with ActiveMQ. When used with the JMX support it can be a very valuable tool for working with ActiveMQ. 
 
-The ActiveMQ Web Console is included in the binary option of **ActiveMQ** and therefore also available inside the docker container. In a browser, navigate to <http://integrationplatform:8161/admin/>.
+The ActiveMQ Web Console is included in the binary option of **ActiveMQ** and therefore also available inside the docker container. In a browser, navigate to <http://dataplatform:8161/admin/>.
 
 Enter `admin` into the **User Name** field and `admin` into the **Password** field and click **OK**. 
 
@@ -266,7 +207,7 @@ With the third party console, Hawt.IO presented below, you can do a bit more - s
 
 [Hawtio](http://hawt.io/) is a modular web console for managing Java infrastructures.
 
-In a Web browser navigate to <http://integrationplatform:38085/hawtio/>.
+In a Web browser navigate to <http://dataplatform:28155/hawtio/>.
 
 You should see the **Welcome to hawtio** page. Click on **Do not show welcome page on startup** to get to the **Connection** page, as shown below. 
 
@@ -303,8 +244,7 @@ Both the console as well as Hawtio do not behave like a real client. You can't s
 Create a bin folder in the user home, if it does not yet exists.
 
 ```
-mkdir ~/bin
-cd ~/bin
+cd /usr/local/bin
 ```
 
 Now let's download the latest release from [GitHub](https://github.com/fmtn/a) project.

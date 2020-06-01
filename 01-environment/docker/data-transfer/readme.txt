@@ -1,1 +1,1 @@
-Place files you want to have transferred into the Namenode here.
+Place data to be mapped into the various containers in here

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="CustomerService" resourceRoot="" soapui-version="4.5.0" abortOnError="false" runType="SEQUENTIAL" activeEnvironment="Default" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="CustomerServiceSOAP" type="wsdl" bindingName="{http://www.example.org/CustomerService/}CustomerServiceSOAP" soapVersion="1_1" anonymous="optional" definition="D:/workspace/osb-workspace/ExceptionHandlingProject/WSDL/CustomerService.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/D:/workspace/osb-workspace/ExceptionHandlingProject/WSDL/CustomerService.wsdl"><con:part><con:url>file:/D:/workspace/osb-workspace/ExceptionHandlingProject/WSDL/CustomerService.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="CustomerService" targetNamespace="http://www.example.org/CustomerService/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.example.org/CustomerService/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.example.org/CustomerService/">
+      <xsd:element name="CreateNewCustomer">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="firstName" type="xsd:string"/>
+            <xsd:element name="lastName" type="xsd:string"/>
+            <xsd:element name="street" type="xsd:string"/>
+            <xsd:element name="zipCode" type="xsd:string"/>
+            <xsd:element name="city" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CreateNewCustomerResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="id" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CreateNewCustomerFault">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="CreateNewCustomerFault" type="xsd:string"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CreateNewCustomerRequest">
+    <wsdl:part name="parameters" element="tns:CreateNewCustomer"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateNewCustomerResponse">
+    <wsdl:part name="parameters" element="tns:CreateNewCustomerResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateNewCustomerFault">
+    <wsdl:part name="parameters" element="tns:CreateNewCustomerFault"/>
+  </wsdl:message>
+  <wsdl:portType name="CustomerService">
+    <wsdl:operation name="CreateNewCustomer">
+      <wsdl:input message="tns:CreateNewCustomerRequest"></wsdl:input>
+      <wsdl:output message="tns:CreateNewCustomerResponse"></wsdl:output>
+      <wsdl:fault name="fault" message="tns:CreateNewCustomerFault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CustomerServiceSOAP" type="tns:CustomerService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="CreateNewCustomer">
+      <soap:operation soapAction="http://www.example.org/CustomerService/CreateNewCustomer"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CustomerService">
+    <wsdl:port name="CustomerServiceSOAP" binding="tns:CustomerServiceSOAP">
+      <soap:address location="http://soadev:8088/mockCustomerServiceSOAP"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://www.example.org/</con:endpoint><con:endpoint>https://localhost:8088/mockCustomerServiceSOAP</con:endpoint><con:endpoint>http://soadev:8088/mockCustomerServiceSOAP</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://www.example.org/CustomerService/CreateNewCustomer" name="CreateNewCustomer" bindingOperationName="CreateNewCustomer" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8088/mockCustomerServiceSOAP</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cus="http://www.example.org/CustomerService/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <cus:CreateNewCustomer>
+         <firstName>Peter</firstName>
+         <lastName>Sample</lastName>
+         <street>Neuengasse 9</street>
+         <zipCode>3011</zipCode>
+         <city>Bern</city>
+      </cus:CreateNewCustomer>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType><con:username>soapui</con:username><con:password>oracle</con:password></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.example.org/CustomerService/CreateNewCustomer"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:mockService port="8088" path="/mockCustomerServiceSOAP" host="localhost" name="CustomerServiceSOAP MockService" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:mockOperation name="CreateNewCustomer" interface="CustomerServiceSOAP" operation="CreateNewCustomer"><con:settings/><con:dispatchStyle>QUERY_MATCH</con:dispatchStyle><con:defaultResponse>Error Response</con:defaultResponse><con:response name="Response 1" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cus="http://www.example.org/CustomerService/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <cus:CreateNewCustomerResponse>
+         <id>1</id>
+      </cus:CreateNewCustomerResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.example.org/CustomerService/CreateNewCustomer"/></con:response><con:response name="Error Response" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>Server</faultcode>
+      <faultstring>Could not create customer</faultstring>
+      <!--Optional:-->
+      <faultactor>?</faultactor>
+      <!--Optional:-->
+      <detail>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.example.org/CustomerService/CreateNewCustomer"/></con:response><con:dispatchConfig xsi:type="con:MockOperationQueryMatchDispatch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:query><con:name>Valid</con:name><con:query>declare namespace cus='http://www.example.org/CustomerService/';
+declare namespace soapenv='http://schemas.xmlsoap.org/soap/envelope/';
+/soapenv:Envelope/soapenv:Body/cus:CreateNewCustomer/lastName</con:query><con:match>Sample</con:match><con:response>Response 1</con:response></con:query></con:dispatchConfig></con:mockOperation><con:properties/></con:mockService><con:properties/><con:wssContainer/><con:sensitiveInformation/></con:soapui-project>

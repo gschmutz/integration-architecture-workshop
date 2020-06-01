@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="CreditCardServiceWithFault" resourceRoot="" soapui-version="5.2.0" abortOnError="false" runType="SEQUENTIAL" id="66882355-9fea-4ad1-b97c-a40ebdc6fb66" activeEnvironment="Default" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="CreditCardValidationBinding" type="wsdl" bindingName="{http://xmlns.oracle.com/TestingBestPracticeApplication/CreditCardProject/CreditCardValidation}CreditCardValidationBinding" soapVersion="1_1" anonymous="optional" definition="file:/d:/workspace/trivadis-subversion/PresentationsAD/trunk/webservice-mocks/CreditServiceWithFaults/CreditCardService.wsdl" id="05758655-a823-4690-9af4-8a927a1a183b" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/d:/workspace/trivadis-subversion/PresentationsAD/trunk/webservice-mocks/CreditServiceWithFaults/CreditCardService.wsdl"><con:part><con:url>file:/d:/workspace/trivadis-subversion/PresentationsAD/trunk/webservice-mocks/CreditServiceWithFaults/CreditCardService.wsdl</con:url><con:content><![CDATA[<!--edited with XMLSpy v2010 (http://www.altova.com) by Schmutz Guido (Trivadis Holding AG)-->
+<wsdl:definitions name="CreditCardValidation" targetNamespace="http://xmlns.oracle.com/TestingBestPracticeApplication/CreditCardProject/CreditCardValidation" xmlns:tns="http://xmlns.oracle.com/TestingBestPracticeApplication/CreditCardProject/CreditCardValidation" xmlns:inp1="http://cdm.eurojourney.com/hnd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:out1="http://cdm.eurojourney.com/hnd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+      <import namespace="http://cdm.eurojourney.com/hnd" schemaLocation="xsd/CreditCardPayment.cdm.xsd"/>
+    </schema>
+  </wsdl:types>
+  <wsdl:message name="requestMessage">
+    <wsdl:part name="request" element="inp1:validateCreditCardPaymentRequest"/>
+  </wsdl:message>
+  <wsdl:message name="replyMessage">
+    <wsdl:part name="reply" element="inp1:validateCreditCardPaymentResponse"/>
+  </wsdl:message>
+  <wsdl:message name="invalidCreditCardNumberFault">
+    <wsdl:part name="error" element="inp1:invalidCreditCardNumberFault"/>
+  </wsdl:message>
+  <wsdl:message name="creditCardExpiredFault">
+    <wsdl:part name="error" element="inp1:creditCardExpiredFault"/>
+  </wsdl:message>
+  <wsdl:portType name="CreditCardValidationPT">
+    <wsdl:operation name="validateCard">
+      <wsdl:input message="tns:requestMessage"/>
+      <wsdl:output message="tns:replyMessage"/>
+      <wsdl:fault name="InvalidCreditCardNumberFault" message="tns:invalidCreditCardNumberFault"/>
+      <wsdl:fault name="CreidtCardExpiredFault" message="tns:creditCardExpiredFault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CreditCardValidationBinding" type="tns:CreditCardValidationPT">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="validateCard">
+      <soap:operation soapAction="urn:#validateCard"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InvalidCreditCardNumberFault"/>
+      <wsdl:fault name="CreidtCardExpiredFault"/>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CreditCardValidationService">
+    <wsdl:port name="CreditCardValidationP" binding="tns:CreditCardValidationBinding">
+      <soap:address location="not-specified"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:\d:\workspace\trivadis-subversion\PresentationsAD\trunk\webservice-mocks\CreditServiceWithFaults\xsd\CreditCardPayment.cdm.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="http://cdm.eurojourney.com/hnd" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:tns="http://cdm.eurojourney.com/hnd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="CreditCard.cdm.xsd"/>
+  <xs:element name="validateCreditCardPaymentRequest" type="tns:ValidateCreditCardPaymentRequestT"/>
+  <xs:element name="validateCreditCardPaymentResponse" type="tns:ValidateCreditCardPaymentResponseT"/>
+  <xs:element name="invalidCreditCardNumberFault" type="tns:InvalidCreditCardNumberFaultT"/>
+  <xs:element name="creditCardExpiredFault" type="tns:CreditCardExpiredFaultT"/>
+  <xs:complexType name="ValidateCreditCardPaymentRequestT">
+    <xs:sequence>
+      <xs:element name="requestNr" type="xs:string" minOccurs="1"/>
+      <xs:element name="creditCard" type="tns:CreditCardT" minOccurs="1"/>
+      <xs:element name="forAmount" type="xs:double" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ValidateCreditCardPaymentResponseT">
+    <xs:sequence>
+      <xs:element name="requestNr" type="xs:string" minOccurs="1"/>
+      <xs:element name="reservationNumber" type="xs:string" minOccurs="0" nillable="true"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InvalidCreditCardNumberFaultT">
+    <xs:sequence>
+      <xs:element name="creditCard" type="tns:CreditCardT" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CreditCardExpiredFaultT">
+    <xs:sequence>
+      <xs:element name="creditCard" type="tns:CreditCardT" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:\d:\workspace\trivadis-subversion\PresentationsAD\trunk\webservice-mocks\CreditServiceWithFaults\xsd\CreditCard.cdm.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="http://cdm.eurojourney.com/hnd" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:tns="http://cdm.eurojourney.com/hnd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="creditCard" type="tns:CreditCardT"/>
+  <xs:complexType name="CreditCardT">
+    <xs:sequence>
+      <xs:element name="creditCardKind" type="tns:CreditCardKindT"/>
+      <xs:element name="cardNumber" type="xs:string" minOccurs="1"/>
+      <xs:element name="cardholderFirstName" type="xs:string" minOccurs="1"/>
+      <xs:element name="cardholderLastName" type="xs:string" minOccurs="1"/>
+      <xs:element name="expirationMonth" type="tns:MonthT" minOccurs="1"/>
+      <xs:element name="expirationYear" type="tns:YearT" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="CreditCardKindT">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="visa"/>
+      <xs:enumeration value="amexco"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="MonthT">
+    <xs:restriction base="xs:int">
+      <xs:pattern value="[0-1][0-9]"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="YearT">
+    <xs:restriction base="xs:int">
+      <xs:pattern value="[0-9][0-9][0-9][0-9]"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8088/mockCreditCardValidationBinding</con:endpoint><con:endpoint>not-specified</con:endpoint></con:endpoints><con:operation isOneWay="false" action="urn:#validateCard" name="validateCard" bindingOperationName="validateCard" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="76c7073b-f40b-45d2-ad52-6dbc0864a21e"><con:settings/><con:call name="invalidCreditCardNumber" id="26238fde-1b9e-4e04-a7b5-d1f954ab5b17"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8088/mockCreditCardValidationBinding</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hnd="http://cdm.eurojourney.com/hnd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <hnd:validateCreditCardPaymentRequest>
+         <hnd:requestNr>1</hnd:requestNr>
+         <hnd:creditCard>
+            <hnd:creditCardKind>visa</hnd:creditCardKind>
+            <hnd:cardNumber>1234 5678 9012 3456</hnd:cardNumber>
+            <hnd:cardholderFirstName>Peter</hnd:cardholderFirstName>
+            <hnd:cardholderLastName>Sample</hnd:cardholderLastName>
+            <hnd:expirationMonth>07</hnd:expirationMonth>
+            <hnd:expirationYear>2010</hnd:expirationYear>
+         </hnd:creditCard>
+         <hnd:forAmount>1000.00</hnd:forAmount>
+      </hnd:validateCreditCardPaymentRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:#validateCard"/><con:wsrmConfig version="1.2"/></con:call><con:call name="creditCardExpired" id="0b7db1cc-1440-4587-ba0f-0575dc9a5b06"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8088/mockCreditCardValidationBinding</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hnd="http://cdm.eurojourney.com/hnd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <hnd:validateCreditCardPaymentRequest>
+         <hnd:requestNr>2</hnd:requestNr>
+         <hnd:creditCard>
+            <hnd:creditCardKind>visa</hnd:creditCardKind>
+            <hnd:cardNumber>1234 5678 9123 4567</hnd:cardNumber>
+            <hnd:cardholderFirstName>Peter</hnd:cardholderFirstName>
+            <hnd:cardholderLastName>Sample</hnd:cardholderLastName>
+            <hnd:expirationMonth>07</hnd:expirationMonth>
+            <hnd:expirationYear>2008</hnd:expirationYear>
+         </hnd:creditCard>
+         <hnd:forAmount>1000.00</hnd:forAmount>
+      </hnd:validateCreditCardPaymentRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:#validateCard"/><con:wsrmConfig version="1.2"/></con:call><con:call name="validCard" id="74be497b-f8a6-4050-9756-a1ebb2bc2f9a"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8088/mockCreditCardValidationBinding</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hnd="http://cdm.eurojourney.com/hnd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <hnd:validateCreditCardPaymentRequest>
+         <hnd:requestNr>2</hnd:requestNr>
+         <hnd:creditCard>
+            <hnd:creditCardKind>visa</hnd:creditCardKind>
+            <hnd:cardNumber>1234 4566 9899 1300</hnd:cardNumber>
+            <hnd:cardholderFirstName>Peter</hnd:cardholderFirstName>
+            <hnd:cardholderLastName>Sample</hnd:cardholderLastName>
+            <hnd:expirationMonth>09</hnd:expirationMonth>
+            <hnd:expirationYear>2012</hnd:expirationYear>
+         </hnd:creditCard>
+         <hnd:forAmount>?</hnd:forAmount>
+      </hnd:validateCreditCardPaymentRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:#validateCard"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:mockService port="8088" path="/mockCreditCardValidationBinding" host="soadev" name="CreditCardValidationBinding MockService" bindToHostOnly="false" docroot="" id="63f624cc-2a77-4666-af0f-e472256a159e"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:mockOperation name="validateCard" interface="CreditCardValidationBinding" operation="validateCard" id="a7e6e28e-a490-4d48-9030-38f5258e757a"><con:settings/><con:dispatchStyle>QUERY_MATCH</con:dispatchStyle><con:defaultResponse>ValidResponse</con:defaultResponse><con:response name="ValidResponse" encoding="UTF-8" id="4ed49d7d-fe0d-4d8f-948a-41b364fd23f0" httpResponseStatus="200"><con:settings/><con:script>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context )
+def holder = groovyUtils.getXmlHolder( mockRequest.requestContent )
+holder.namespaces["hnd"] = "http://cdm.eurojourney.com/hnd"
+
+context.requestNr = holder.getNodeValue("//hnd:requestNr")
+context.reservationNumber =  Math.round(Math.random() * 1000000)
+</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hnd="http://cdm.eurojourney.com/hnd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <hnd:validateCreditCardPaymentResponse>
+         <!--Optional:-->
+         <hnd:requestNr>${requestNr}</hnd:requestNr>
+         <hnd:reservationNumber>${reservationNumber}</hnd:reservationNumber>
+      </hnd:validateCreditCardPaymentResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:#validateCard"/></con:response><con:response name="InvalidCardNumberFault" encoding="UTF-8" id="9df29bf8-0ecb-4cfb-a6d2-ffe62c607b7d" httpResponseStatus="200"><con:settings/><con:script>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context )
+def holder = groovyUtils.getXmlHolder( mockRequest.requestContent )
+holder.namespaces["hnd"] = "http://cdm.eurojourney.com/hnd"
+
+context.creditCardKind = holder.getNodeValue("//hnd:creditCardKind")
+context.cardNumber = holder.getNodeValue("//hnd:cardNumber")
+context.cardholderFirstName = holder.getNodeValue("//hnd:cardholderFirstName")
+context.cardholderLastName = holder.getNodeValue("//hnd:cardholderLastName")
+context.expirationMonth = holder.getNodeValue("//hnd:expirationMonth")
+context.expirationYear = holder.getNodeValue("//hnd:expirationYear")</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hnd="http://cdm.eurojourney.com/hnd">
+   <soapenv:Body>
+      <soapenv:Fault>
+         <faultcode>hnd:InvalidCreditCardNumber</faultcode>
+         <faultstring>Invalid credit card number!</faultstring>
+         <!--Optional:-->
+         <detail>
+            <hnd:invalidCreditCardNumberFault>
+               <hnd:creditCard>
+                  <hnd:creditCardKind>${creditCardKind}</hnd:creditCardKind>
+                  <hnd:cardNumber>${cardNumber}</hnd:cardNumber>
+                  <hnd:cardholderFirstName>${cardholderFirstName}</hnd:cardholderFirstName>
+                  <hnd:cardholderLastName>${cardholderLastName}</hnd:cardholderLastName>
+                  <hnd:expirationMonth>${expirationMonth}</hnd:expirationMonth>
+                  <hnd:expirationYear>${expirationYear}</hnd:expirationYear>
+               </hnd:creditCard>
+            </hnd:invalidCreditCardNumberFault>
+            <!--You may enter ANY elements at this point-->
+         </detail>
+      </soapenv:Fault>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:#validateCard"/></con:response><con:response name="CreditCardExpiredFault" encoding="UTF-8" id="4fbab20c-a237-437d-a9bc-f9b5b3b261d6" httpResponseStatus="200"><con:settings/><con:script>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context )
+def holder = groovyUtils.getXmlHolder( mockRequest.requestContent )
+holder.namespaces["hnd"] = "http://cdm.eurojourney.com/hnd"
+
+context.creditCardKind = holder.getNodeValue("//hnd:creditCardKind")
+context.cardNumber = holder.getNodeValue("//hnd:cardNumber")
+context.cardholderFirstName = holder.getNodeValue("//hnd:cardholderFirstName")
+context.cardholderLastName = holder.getNodeValue("//hnd:cardholderLastName")
+context.expirationMonth = holder.getNodeValue("//hnd:expirationMonth")
+context.expirationYear = holder.getNodeValue("//hnd:expirationYear")</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hnd="http://cdm.eurojourney.com/hnd">
+   <soapenv:Body>
+      <soapenv:Fault>
+         <faultcode>hnd:CreditCardExpired</faultcode>
+         <faultstring>Credit Card expired!</faultstring>
+         <!--Optional:-->
+         <detail>
+            <hnd:creditCardExpiredFault>
+               <hnd:creditCard>
+                  <hnd:creditCardKind>${creditCardKind}</hnd:creditCardKind>
+                  <hnd:cardNumber>${cardNumber}</hnd:cardNumber>
+                  <hnd:cardholderFirstName>${cardholderFirstName}</hnd:cardholderFirstName>
+                  <hnd:cardholderLastName>${cardholderLastName}</hnd:cardholderLastName>
+                  <hnd:expirationMonth>${expirationMonth}</hnd:expirationMonth>
+                  <hnd:expirationYear>${expirationYear}</hnd:expirationYear>
+               </hnd:creditCard>
+            </hnd:creditCardExpiredFault>
+            <!--You may enter ANY elements at this point-->
+         </detail>
+      </soapenv:Fault>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:#validateCard"/></con:response><con:dispatchConfig xsi:type="con:MockOperationQueryMatchDispatch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:query><con:name>invalidCardNumberFault</con:name><con:query>declare namespace ns1='http://cdm.eurojourney.com/hnd';
+declare namespace wsa='http://www.w3.org/2005/08/addressing';
+declare namespace hnd='http://cdm.eurojourney.com/hnd';
+declare namespace soapenv='http://schemas.xmlsoap.org/soap/envelope/';
+/soapenv:Envelope/soapenv:Body/hnd:validateCreditCardPaymentRequest/hnd:creditCard/hnd:cardNumber</con:query><con:match>1234 5678 9012 3456</con:match><con:response>InvalidCardNumberFault</con:response></con:query><con:query><con:name>CreditCardExpiredFault</con:name><con:query>declare namespace hnd='http://cdm.eurojourney.com/hnd';
+declare namespace soapenv='http://schemas.xmlsoap.org/soap/envelope/';
+/soapenv:Envelope/soapenv:Body/hnd:validateCreditCardPaymentRequest/hnd:creditCard/hnd:expirationYear &lt; 2010</con:query><con:match>true</con:match><con:response>CreditCardExpiredFault</con:response></con:query></con:dispatchConfig></con:mockOperation><con:properties/></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>

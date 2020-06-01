@@ -6,8 +6,11 @@ This exercise will step you through building your first transformation with Pent
 
 ## Starting Penthao
 
+You can either use the Fat Client by installing it locally or run it as a Docker container. 
+Alternatively you can also use the Webapplication which is part of the stack.
+
 ### In a Docker Container
-As Penthao is a Fat Client Application, we cannot start it as part of the Docker Compose stack. But we can also start it using a docker container and reference the network using the `--network` argument, so that we can access the different infrastructure element using the service names from the docker compose definition. 
+As Penthao is a Fat Client Application, we cannot start it as part of the Docker Compose stack. But we can start it using a docker container and reference the network using the `--network` argument, so that we can access the different infrastructure element using the service names from the docker compose definition. 
 
 In a terminal window, execute the following command and the Penthao splash screen should show up
 
@@ -22,30 +25,11 @@ docker run -it --rm -v /tmp/.X11-unix/:/tmp/.X11-unix/:ro \
 
 If it doesn't work, then you can also download it to your local machine as shown in the next section. In the Virtual Machine provided it is already available in `/home/bigdata/data-integration`. 
 
-### In Docker Compose as a Web application (experimental)
-
-Add the following service to the `docker-compose.yml`
-
-```
-  webspoon:
-    image: hiromuhota/webspoon
-    container_name: webspoon
-    hostname: webspoon
-    volumes:
-      - ./data-transfer:/data-transfer
-    ports:
-      - '38084:8080'
-    restart: always
-```
-
-and (re)execute a `docker-compose up -d`.
-
 ### Locally
 
-To work with Penthao locally, you can download Penthao 7.1 from here
+To work with Penthao locally, you can download Penthao 9.0 from here
 
-
-<https://sourceforge.net/projects/pentaho/files/Data%20Integration/7.1/pdi-ce-7.1.0.0-12.zip/download>
+<https://sourceforge.net/projects/pentaho/files/Pentaho%209.0/client-tools/pdi-ce-9.0.0.0-423.zip/download>
 
 and then unzip it to a local folder.
 
@@ -53,9 +37,12 @@ Navigate to the newly created folder `data-integration` and run either `spoon.sh
 
 ## Make sure that there is some data on the FTP server
 
-Navigate to <http://integrationplatform:5800> to open the Filezilla UI in a browser window. 
+Navigate to <http://dataplatform:5800> to open the Filezilla UI in a browser window. 
 
-Before you connect to the FTP service, make sure that you change the Filezilla FTP mode to `Active`. From the **File** menu, select **Settings ...** and then navigate to **FTP** and change the **Transfer Mode** to **Active**. Click **OK** to save the settings. 
+Before you connect to the FTP service, make sure that you change the Filezilla FTP mode to `Active`. 
+From the **File** menu, select **Settings ...** and then navigate to **FTP** and change the **Transfer Mode** to **Active**. 
+
+Click **OK** to save the settings. 
 
 1. Enter `admin123` into the **password** field and click **Submit**.
 2. Enter `ftp` into the **host** field.
@@ -77,6 +64,8 @@ Before you connect to the FTP service, make sure that you change the Filezilla F
 The file is now available on the FTP server and we will use Penthao to first copy it locally and then process it and load it into a Postgresql database.
 
 ## Copy data from FTP Server to Local files
+
+Navigate to <http://dataplatform:28154/> to open the Penthao Webapplication.
 
 Follow the instructions below to retrieve a file from a FTP server. 
 
@@ -101,14 +90,19 @@ Follow the instructions below to retrieve a file from a FTP server.
 7. Navigate to the **Files** tab. 
 8. Enter `/inbox` into the **Remote directory** field and click **Check folder**. 
 9. Enter `.*.csv` into the **Wildcard (regular expression)** field. 
-9. Select **Remove files after retrieval?**.  
 9. Select **Move files after retrieval?**, enter `archive` into the **Move to folder** field and select the **Create folder**. 
-10. Enter `/tmp` into the **Target directory** field. 
+10. Enter `/usr/local/tomcat/landing` into the **Target directory** field. 
 11. Click **OK**.
 
 	![Alt Image Text](./images/get-files-files.png "Create Job")
 
 12. Select **File** > **Save** and enter `copy-ftp` into the **Name** field, navigate to the `root` folder and click **OK**.
+
+12. Create the `landing` folder inside the penthao container
+
+	```
+docker exec -ti penthao mkdir landing
+```
 
 13. To run the job, click on the play icon on the top of the canvas. 
 
@@ -126,7 +120,7 @@ Follow the instructions below to retrieve a file from a FTP server.
 17. Now also check that the file has been copied to the `/tmp` folder inside the **spoon** container
 
 ```
-docker exec -ti spoon ls /tmp/sales_data.csv
+docker exec -ti penthao ls landing/sales_data.csv
 ```
 
 ## Retrieving Data from a Flat File
@@ -135,7 +129,7 @@ Follow the instructions below to retrieve data from a flat file.
 
 1. Select **File** > **New** > **Transformation** in the upper left corner of the Spoon window to create a new transformation.
 
-2. Under the **Design** tab, expand the **Input** node; then, select and drag a **Text File Input** step onto the canvas.
+2. Under the **Design** tab, expand the **Input** node then select and drag a **Text File Input** step onto the canvas.
 
 3. Double-click on the **Text File** input step. The **Text file input** window appears. This window allows you to set the properties for this step.
 
@@ -143,7 +137,7 @@ Follow the instructions below to retrieve data from a flat file.
 
 4. Enter `Read Sales Data` into the **Step Name** field. This renames the **Text file input** step to **Read Sales Data**.
 
-5. Click **Browse** on the right of the **File or directory** field to locate the source file we have copied above from the FTP server, **sales_data.csv**, available under `/tmp/`. Select the file and click **OK** and the path to the source file appears in the **File or directory** field.
+5. Click **Browse** on the right of the **File or directory** field to locate the source file we have copied above from the FTP server, **sales_data.csv**, available under `/usr/local/tomcat/landing`. Select the file and click **OK** and the path to the source file appears in the **File or directory** field. If the file is not selectable, just select the folder and add the filename manually to the **File or directory** field so that it reads `/usr/local/tomcat/landing/sales_data.csv`.
 
 6. Click **Add**. The path to the file appears under **Selected Files**. 
 
@@ -157,7 +151,8 @@ Follow the instructions below to retrieve data from a flat file.
 
 8. To provide information about the content, perform the following steps:
    * Click again on **Content** tab. The fields under the Content tab allow you to define how your data is formatted.
-   * Make sure that the **Separator** is set to comma `,` and that the **Enclosure** is set to quotation mark `"`. Enable **Header** because there is one line of header rows in the file.
+   * Make sure that the **Separator** is set to comma `,` and that the **Enclosure** is set to quotation mark `"`. 
+   * Enable **Header** because there is one line of header rows in the file.
 
 	![Alt Image Text](./images/transform-content-window.png "Transform")
 
@@ -191,7 +186,7 @@ After completing **Retrieve Data from a Flat File**, you are ready to add the ne
   8. Click **OK​** to close the Functions: window.
   9. Click **OK** to exit the Filter Rows window.
 
-**Note**: You will return to this step later and configure the Send true data to step and Send false data to step settings after adding their target steps to your transformation.
+**Note**: You will return to this step later and configure the Send true data to a step and Send false data to another step after adding their target steps to your transformation.
 
 Select **File** | **Save** to save your transformation.
 
@@ -225,6 +220,8 @@ After completing **Filter Records with Missing Postal Codes**, you are ready to 
      * Click **Close** in the **Simple SQL editor** window to close it.
      * Click **OK** to close the **Table output** window.
 
+11. Click on **Filter Rows** and select **Write to Database** for the **Send 'true' data to step** and click **OK**.
+
 Save your transformation.
 
 ## Run Your Transformation
@@ -250,11 +247,11 @@ Data Integration provides a number of deployment options. Running a Transformati
 
 You can use the graphical UI **Adminer** to connect to PostgreSQL and execute SQL statements. 
 
-1. Navigate to <http://integrationplatform:28081> to open **Adminer** in a browser window.
+1. Navigate to <http://dataplatform:28131> to open **Adminer** in a browser window.
 2. Enter the connection details as
    * Select `PostgreSQL` from the list of **System**
    * Enter `postgresql` into the **Server** field
-   * Enter `orderproc` into both **Username** and **Password** field
-   * Enter `orderproc` into the **Database** field
+   * Enter `sample` into both **Username** and **Password** field
+   * Enter `sample` into the **Database** field
    * Click **Login** to log into the PostgreSQL instance
 3. Navigate to the `SALES_DATA` table browse into the data

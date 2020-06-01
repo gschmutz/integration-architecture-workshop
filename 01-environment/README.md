@@ -26,26 +26,33 @@ These steps are necessary after the starting the docker environment.
 To simplify working with the Streaming Platform and for the links below to work, add the following entry to your local `/etc/hosts` file. 
 
 ```
-40.91.195.92	integrationplatform
+40.91.195.92	dataplatform
 ```
 
 Replace the IP address by the public IP address of the docker host. 
 
-## Services accessible on Integration Platform
+## Services accessible on Integration Data Platform
+
 The following service are available as part of the platform:
 
 Type | Service | Url
 ------|------- | -------------
-Development | Apache Zeppelin | <http://integrationplatform:38081>
-Development | Jupyter | <http://integrationplatform:38888>
-Management | Adminer | <http://integrationplatform:38080>
-Management | Minio | <http://integrationplatform:9000>
-Management | Presto | <http://integrationplatform:8089>
-Management | Hawtio | <http://integrationplatform:8090/hawtio>
-Management | ActiveMQ Admin | <http://integrationplatform:8161>
-Management | Servicemix | <http://integrationplatform:8161>
-Management | Kafka Manager  | <http://integrationplatform:39000>
-Development | StreamSets Data Collector | <http://integrationplatform:18630>
-Governance | Schema Registry UI  | <http://integrationplatform:8002>
+Development | Apache Zeppelin | <http://dataplatform:28080>
+Development | Jupyter | <http://dataplatform:28888>
+Development | Penthao | <http://dataplatform:28154>
+Management | Adminer | <http://dataplatform:28131>
+Management | Minio | <http://dataplatform:9000>
+Management | Presto | <http://dataplatform:28081>
+Management | Hawtio | <http://dataplatform:28155/hawtio>
+Management | ActiveMQ Admin | <http://dataplatform:8161>
+Management | RabbitMQ Admin | <http://dataplatform:15672>
+Management | MQTT UI | <http://dataplatform:28136>
+Management | Filezilla | <http://dataplatform:5800>
+Management | Servicemix | <http://dataplatform:xxxx>
+Management | Cluster Manager for Apache Kafka (CMAK)  | <http://dataplatform:28104>
+Management | Apache Kafka HQ (AKHQ) | <http://dataplatform:28107>
+Management | Kafka Connect UI | <http://dataplatform:28103>
+Development | StreamSets Data Collector | <http://dataplatform:18630>
+Governance | Schema Registry UI  | <http://dataplatform:28102>
 
 
