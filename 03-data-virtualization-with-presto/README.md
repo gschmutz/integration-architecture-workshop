@@ -121,7 +121,7 @@ To upload a file we are going to use the `s3cmd put` command.
 Let's start with the file in JSON format
 
 ```
-docker exec -ti awscli s3cmd put /tmp/data-transfer/truckdata/truck_mileage.json s3://truck-bucket/result/json/truck_mileage.json
+docker exec -ti awscli s3cmd put /data-transfer/truckdata/truck_mileage.json s3://truck-bucket/result/json/truck_mileage.json
 ```
 
 We use the prefix `result` to separate the files from possible `raw` files.
@@ -129,7 +129,7 @@ We use the prefix `result` to separate the files from possible `raw` files.
 Next let's do the same for the file in Parquet format
 
 ```
-docker exec -ti awscli s3cmd put /tmp/data-transfer/truckdata/truck_mileage.parquet s3://truck-bucket/result/parquet/truck_mileage.parquet
+docker exec -ti awscli s3cmd put /data-transfer/truckdata/truck_mileage.parquet s3://truck-bucket/result/parquet/truck_mileage.parquet
 ```
 
 Let's see the content of `truck-bucket`
@@ -222,7 +222,7 @@ With the mapping in place, we can now use Presto to query the data in MinIO.
 Let's see that in action. Connect to the Presto CLI using
 
 ```
-docker exec -it presto presto-cli
+docker exec -it presto-1 presto-cli
 ```
 
 On the Presto command prompt, first switch to the right database. 
