@@ -77,7 +77,7 @@ Click on the **+** icon at the lower right corner to either perform an **Create 
 
 In a browser window, navigate to <http://dataplatform:28080> and you should see the Apache Zeppelin homepage. 
 
-Now you need to login by clicking on the **Login** button in the top right corner. Enter `admin` into the **User Name** field and `abc123` into the **Password** field. 
+Now you need to login by clicking on the **Login** button in the top right corner. Enter `admin` into the **User Name** field and `abc123!` into the **Password** field. 
 
 Create a new notebook using the **Create new note** link and then  use the `s3cmd` command from within a cell in a notebook using the `%sh` interpreter.
 
