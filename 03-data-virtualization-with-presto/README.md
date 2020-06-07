@@ -100,7 +100,7 @@ docker exec -ti awscli s3cmd mb s3://truck-bucket
 and you should get the bucket created method as shown below
 
 ```
-bigdata@bigdata:~$ docker exec -ti awscli s3cmd mb s3://truck-bucket
+docker exec -ti awscli s3cmd mb s3://truck-bucket
 Bucket 's3://truck-bucket/' created
 ```
 
