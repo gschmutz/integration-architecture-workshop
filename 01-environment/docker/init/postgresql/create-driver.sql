@@ -9,7 +9,7 @@ GRANT ALL PRIVILEGES ON SCHEMA truck TO orderproc;
 
 CREATE TABLE truck.driver (id integer PRIMARY KEY, id_str varchar(10), first_name varchar(100), last_name varchar(100), email varchar(50), gender varchar(10));
 
-GRANT ALL PRIVILEGES ON TABLE driver TO orderproc;
+GRANT ALL PRIVILEGES ON TABLE truck.driver TO orderproc;
 
 insert into truck.driver (id, id_str, first_name, last_name, email, gender) values (1, 'A1', 'Cloe', 'Atcherley', 'catcherley0@youku.com', 'Female');
 insert into truck.driver (id, id_str, first_name, last_name, email, gender) values (2, 'A2', 'Dorita', 'Duggan', 'dduggan1@thetimes.co.uk', 'Female');
