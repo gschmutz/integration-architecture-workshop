@@ -100,7 +100,7 @@ Follow the instructions below to retrieve a file from a FTP server.
 
 12. Create the `landing` folder inside the penthao container
 
-	```
+```
 docker exec -ti penthao mkdir landing
 ```
 
