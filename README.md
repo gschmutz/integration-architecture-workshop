@@ -13,8 +13,9 @@
 * [06-working-with-kafka-broker](./06-working-with-kafka-broker)
 * [06a-producing-consuming-kafka-with-python](./06a-producing-consuming-kafka-with-python)
 * [07-working-with-rabbitmq-broker](./07-working-with-rabbitmq-broker)
-* [10-iot-data-ingestion-over-mqtt](./10-iot-data-ingestion-over-mqtt)
-* [11-streaming-integration-with-streamsets](./11-streaming-integration-with-streamsets)
+* [08-streaming-iot](./08-streaming-iot)
+* [08a-iot-data-ingestion-over-mqtt](./08a-iot-data-ingestion-over-mqtt)
+* [09-streaming-integration-with-streamsets](./09-streaming-integration-with-streamsets)
 
 ## Application-Centric Integration
 
