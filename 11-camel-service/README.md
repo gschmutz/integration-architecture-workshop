@@ -4,77 +4,13 @@ In this workshop we will learn how to use the [Apache Camel](https://camel.apach
 
 We will see how Apache Camel can help in integrating different applications/systems in a very lightweight manner. 
 
-## Adding the necessary services to the environment
-
-For this workshop we will use the `ftp` service which is already part of the base platform. Make sure that you update the `docker-compose.yml` to the latest version in GitHub, by executing a `git pull`. The `ftp` service should look like the one below
-
-```
-  ftp:
-    image: stilliard/pure-ftpd
-    container_name: ftp
-    hostname: ftp
-    environment:
-#      - PUBLICHOST="192.168.73.86"
-      - PUBLICHOST=${DOCKER_HOST_IP}
-      - FTP_USER_NAME=orderproc
-      - FTP_USER_PASS=orderproc
-      - FTP_USER_HOME=/home/ftp-data
-      - FTP_MAX_CLIENTS=9
-    ports:
-      - "21:21"
-      - "30000-30009:30000-30009"
-    restart: always
-```
-
-Additionally to the base environment, we need `activemq` & `hawtio` if not already existing from the previous workshops. Add the following services to the `docker-compose.override.yml` file 
-
-```
-  activemq:
-    image: rmohr/activemq
-    container_name: activemq
-    ports:
-      # mqtt
-      - "1883:1883"
-      # amqp
-      - "5672:5672"
-      # ui
-      - "8161:8161"
-      # stomp
-      - "61613:61613"
-      # ws
-      - "61614:61614"
-      # jms
-      - "61616:61616"
-#    volumes:
-#      - ./container-volume/activemq/data:/opt/activemq/data
-    restart: always
- 
-  hawtio:
-    image: "erikwramner/hawtio"
-    container_name: hawtio
-    hostname: hawtio
-    ports:
-      - "38085:8080"
-```
-
-Additionally we also need a Java IDE to create some, rather simple Java classes, which act as the orchestrator for our Apache Camel flows. In this workshop we will use the Eclipse IDE, but you can also use your own, preferred IDE, if you have some previous experience with Java. 
+We need a Java IDE to create some, rather simple Java classes, which act as the orchestrator for our Apache Camel flows. In this workshop we will use the Eclipse IDE, but you can also use your own, preferred IDE, if you have some previous experience with Java. 
 
 Unfortunately Eclipse cannot be provisioned using Docker. You either have to install it on your local machine or use the one provided with the Virtual Machine. 
 
-### Starting Eclipse IDE of Virtual Machine
-
-Inside the Virtual Machine, Eclipse is available in the folder `/home/bigdata/eclipse/jee-2018-09/eclipse`. 
-
-```
-cd /home/bigdata/eclipse/jee-2018-09/eclipse
-./eclipse
-```
-
-Skip the next section and continue with **Using Eclipse IDE**
-
 ### Download and Install Eclipse IDE to your local machine
 
-Navigate to <https://www.eclipse.org/downloads/> and download the **Eclipse IDE 2019-06** package. Install it to either your Windows, Mac or Linux environment. 
+Navigate to <https://www.eclipse.org/downloads/> and download the **Eclipse IDE 2020-03** package. Install it to either your Windows, Mac or Linux environment. 
 
 On installing Eclipse IDE you will get asked for the flavour of Eclipse you want to install. Select **Eclipse IDE for Java Developers** when asked and click **Install**. Accept the **Eclipse Foundation Software User Agreement** by clicking on **Accept Now**. During installation you might again be asked to accept license terms. Select **Remember accepted licenses** and click **ACCEPT**. 
 
@@ -562,13 +498,13 @@ As we can see, it references a `camel-order-management-context.xml` file. Create
 
 	<bean id="activemq"
 		class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<property name="brokerURL" value="tcp://integrationplatform:61616" />
+		<property name="brokerURL" value="tcp://dataplatform:61616" />
 	</bean>
 
 </beans>
 ```
 
-It defines the `activemq` bean, which will be used to produce and consume to/from ActiveMQ. Make sure that `integrationplatform` has been added to the `/etc/hosts` file and points to the Docker host. 
+It defines the `activemq` bean, which will be used to produce and consume to/from ActiveMQ. Make sure that `dataplatform` has been added to the `/etc/hosts` file and points to the Docker host. 
 
 Additionally we also register a Route Builder as a bean, and reference it in the `camelConext`. This route builder defines the Camel route using the Java DSL, instead of defining it using the Spring DSL. 
 
@@ -588,7 +524,7 @@ public class OrderManagementRoute extends RouteBuilder {
 		/*
 		 * Consume XML file from FTP server from the "xml" folder and send it to the "orders-xml" queue
 		 */
-        from("ftp://integrationplatform:21/xml?autoCreate=true&username=orderproc&password=orderproc&passiveMode=true&binary=false" + 
+        from("ftp://dataplatform:21/xml?autoCreate=true&username=orderproc&password=orderproc&passiveMode=true&binary=false" + 
         		"&localWorkDirectory=target/ftp-work&delay=15s&delete=true")
         	.to("activemq:orders-xml");
 
@@ -718,7 +654,7 @@ Upload it to the `xml` folder on the FTP server using either the `ftp` command l
 
 #### Using FileZilla
 
-FileZilla can bereached by navigating to <http://integrationplatform:5800>. 
+FileZilla can be reached by navigating to <http://dataplatform:5800>. 
 
 Before you connect to the FTP service, make sure that you change the Filezilla FTP mode to `Active`. From the **File** menu, select **Settings ...** and then navigate to **FTP** and change the **Transfer Mode** to **Active**. Click **OK** to save the settings. 
 
@@ -802,7 +738,7 @@ As soon as the file has been uploaded to FTP, it will be picked up by the `FtpCo
 [ad #2 - ftp://localhost:21/xml] FtpConsumer                    DEBUG Took 0.013 seconds to poll: xml
 ```
 
-Additionally, a message should have been sent to the AcitveMQ queue. Check with the ActiveMQ Web console (<http://integrationplatform:8161/admin>) that there is a message waiting for consumption on the queue `orders-xml` as shown in the screenshot below:
+Additionally, a message should have been sent to the AcitveMQ queue. Check with the ActiveMQ Web console (<http://dataplatform:8161/admin>) that there is a message waiting for consumption on the queue `orders-xml` as shown in the screenshot below:
 
 ![Alt Image Text](./images/activemq-console-browse-queue.png "Edit Pom.xml")
 
@@ -887,7 +823,7 @@ Add the following additional two route definitions to the `OrderManagementRoute`
 		/*
 		 * Consume CSV file from FTP server from the "csv" folder and send it to the "orders-csv" queue
 		 */
-        from("ftp://integrationplatform:21/csv?autoCreate=false&username=order&password=order&passiveMode=true&binary=false" + 
+        from("ftp://dataplatform:21/csv?autoCreate=false&username=order&password=order&passiveMode=true&binary=false" + 
         		"&localWorkDirectory=target/ftp-work&delay=15s&delete=true")
         	.to("activemq:orders-csv");
         	

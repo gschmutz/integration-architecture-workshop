@@ -52,7 +52,7 @@ java -jar visa-web-service-0.1.0.jar
 
 ## Display the WSDL of the Web Service
 
-In a browser, navigate to the WSDL <http://integrationplatform:9098/ws/visa.wsdl>
+In a browser, navigate to the WSDL <http://dataplatform:9098/ws/visa.wsdl>
 
 The WSDL should be retrieved from the service as shown below. 
 
@@ -66,7 +66,7 @@ In SoapUI, create a new project by right-clicking on **Project** and select **Ne
 
 ![Alt Image Text](./images/soapui-new-project.png "SOAPUI Home")
 
-Enter `http://integrationplatform:9098/ws/visa.wsdl` into the **Initial WSDL** field and click **OK**
+Enter `http://dataplatform:9098/ws/visa.wsdl` into the **Initial WSDL** field and click **OK**
 
 ![Alt Image Text](./images/soapui-new-soap-project.png "SOAPUI HOme")
 

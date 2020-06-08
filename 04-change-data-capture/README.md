@@ -46,6 +46,11 @@ Use the MySQL command line client to explore the database and view the pre-loade
 SELECT * FROM customers;
 ```
 
+```
+UPDATE customers SET first_name='A' WHERE id=1004;
+```
+
+
 
 ```
 curl -X POST \
