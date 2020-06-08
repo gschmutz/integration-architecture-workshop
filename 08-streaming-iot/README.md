@@ -36,7 +36,7 @@ A few of the scenarios presented below will be shown/used in other workshops.
 We can start the IoT Truck Simulator in the `FILE` mode, in wich case the data is just written to a local file. Use the following `docker run` command to start it.
 
 ```
-docker run -v "${PWD}/logs:/out" --rm trivadis/iot-truck-simulator '-s' 'FILE' '-f' 'CSV' '-d' '6000' '-fs' '25'
+docker run -v "${PWD}/data-transfer/logs:/out" --rm trivadis/iot-truck-simulator '-s' 'FILE' '-f' 'CSV' '-d' '6000' '-fs' '25'
 ```
 
 The filename is currently hard-coded to `TruckData.dat` and it written to the `/out` folder inside the container. 
